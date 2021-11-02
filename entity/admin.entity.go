@@ -10,16 +10,3 @@ type Admin struct {
 	Role        string `gorm:"default:admin"`
 	Token       string `gorm:"not null"`
 }
-
-type Post struct {
-	Id       int64  `gorm:"primaryKey;not null;autoIncrement"`
-	Title    string `gorm:"not null"`
-	Admin_id int64
-	Admin    Admin `gorm:"foreignKey:admin_id"`
-}
-
-type AdminsPost struct {
-	Id    int64
-	Nama  string
-	Title string
-}

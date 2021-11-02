@@ -15,5 +15,4 @@ func InitRoute(ech *echo.Echo) {
 
 	//Admin Routes
 	ech.GET("/admins", repository.GetAdminList(database))
-	ech.GET("/adminsPost", repository.GetPostListJoinAdmin(database))
 }

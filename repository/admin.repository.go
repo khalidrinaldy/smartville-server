@@ -11,7 +11,7 @@ import (
 func GetAdminList(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
 		var admins []entity.Admin
-		result := db.Raw("SELECT * FROM admins").Scan(&admins)
+		result := db.Find(&admins)
 		
 		if result.Error != nil {
 			return result.Error
@@ -21,19 +21,15 @@ func GetAdminList(db *gorm.DB) echo.HandlerFunc{
 	}
 }
 
-func GetPostListJoinAdmin(db *gorm.DB) echo.HandlerFunc {
+func GetAdminById(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var results []entity.AdminsPost
-		result := db.Raw(
-		`select admins.id, admins.nama, posts.title
-		from admins
-		left join posts
-		on posts.admin_id = admins.id;`).Scan(&results)
+		var admin entity.Admin
+		result := db.First(&admin, c.Param("id"))
 
 		if result.Error != nil {
 			return result.Error
 		}
 
-		return c.JSON(http.StatusOK, &results)
+		return c.JSON(http.StatusOK, &admin)
 	}
 }
