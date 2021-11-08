@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	//"smartville-server/config"
+	"smartville-server/config"
 	"smartville-server/routes"
 
 	"github.com/labstack/echo"
@@ -16,7 +16,7 @@ func main()  {
 	routes.InitRoute(ech)
 
 	//Config
-	//cfg,_ := config.NewConfig(".env")
+	cfg,_ := config.NewConfig(".env")
 
 	//use CORS
 	ech.Use(middleware.CORS())
@@ -24,7 +24,7 @@ func main()  {
 	//Set PORT
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = cfg.Port
 	}
 
 	ech.Logger.Fatal(ech.Start(":" + port))

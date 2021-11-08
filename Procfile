@@ -1,1 +1,1 @@
-web: bin/smartville
+web: smartville-server/app
