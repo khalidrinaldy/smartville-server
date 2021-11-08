@@ -1,1 +1,1 @@
-web: smartville-server/app
+web: smartville-server
