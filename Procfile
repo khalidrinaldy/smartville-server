@@ -1,1 +1,1 @@
-web: smartville-server/app/main.go
+web: smartville-server/app
