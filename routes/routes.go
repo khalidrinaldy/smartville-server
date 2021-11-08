@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"path"
 	"smartville-server/db"
 	"smartville-server/repository"
 
@@ -16,7 +17,7 @@ func InitRoute(ech *echo.Echo) {
 	db.Migrate(database)
 
 	//Basic route
-	ech.GET("/", func(c echo.Context) error {
+	ech.GET(path.Join("/"), func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "Welcome to Smartville API")
 	})
 
