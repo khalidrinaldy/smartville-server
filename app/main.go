@@ -1,10 +1,12 @@
 package main
 
 import (
-	"smartville-server/config"
+	"os"
+	//"smartville-server/config"
 	"smartville-server/routes"
-	"github.com/labstack/echo/middleware"
+
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 func main()  {
@@ -14,14 +16,14 @@ func main()  {
 	routes.InitRoute(ech)
 
 	//Config
-	cfg,_ := config.NewConfig(".env")
+	//cfg,_ := config.NewConfig(".env")
 
 	//use CORS
 	ech.Use(middleware.CORS())
 
 	//Set PORT
-	port := cfg.Port
-	if cfg.Env == "production" {
+	port := os.Getenv("PORT")
+	if port == "" {
 		port = "8080"
 	}
 
