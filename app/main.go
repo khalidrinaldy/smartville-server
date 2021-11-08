@@ -19,5 +19,11 @@ func main()  {
 	//use CORS
 	ech.Use(middleware.CORS())
 
-	ech.Logger.Fatal(ech.Start(":" + cfg.Port))
+	//Set PORT
+	port := cfg.Port
+	if cfg.Env == "production" {
+		port = "8080"
+	}
+
+	ech.Logger.Fatal(ech.Start(":" + port))
 }
