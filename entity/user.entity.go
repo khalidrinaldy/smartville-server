@@ -1,0 +1,22 @@
+package entity
+
+import "time"
+
+type User struct {
+	Id            int64  `gorm:"primaryKey;not null;autoIncrement"`
+	Nik           string `gorm:"type:varchar(16);primaryKey;not null"`
+	Nama          string `gorm:"type:varchar(100);not null"`
+	Email         string `gorm:"type:varchar(100);not null"`
+	Password      string `gorm:"type:varchar(255);not null"`
+	Tgl_lahir     time.Time
+	Tempat_lahir  string `gorm:"type:varchar(50);not null"`
+	Alamat        string `gorm:"type:varchar(255);not null"`
+	Dusun         string `gorm:"type:varchar(50);not null"`
+	Rt            int    `gorm:"type:int(2);not null"`
+	Rw            int    `gorm:"type:int(2);not null"`
+	Jenis_kelamin bool   `gorm:"not null"`
+	No_hp         string `gorm:"type:varchar(15);not null"`
+	Role          string `gorm:"type:varchar(15);default:user"`
+	Profile_pic   string `gorm:"type:varchar(300);not null"`
+	Token         string `gorm:"type:varchar(255);not null"`
+}
