@@ -9,7 +9,7 @@ import (
 
 func OpenDatabase() *gorm.DB {
 	cfg, _ := config.NewConfig(".env")
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=require",
 		cfg.Database.Host,
 		cfg.Database.Port,
 		cfg.Database.Username,
