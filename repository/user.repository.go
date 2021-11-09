@@ -13,16 +13,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAllUser(db *gorm.DB) echo.HandlerFunc{
+
+
+func GetUserList(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var users []entity.User
-		result := db.Find(&users)
-
-		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
+		var users []entity.UserList
+		result := db.Raw("SELECT nik, nama from users").Scan(&users)
+		if result.Error!=nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
-
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &users))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch User List Success", &users))
 	}
 }
 

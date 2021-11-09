@@ -26,6 +26,7 @@ func InitRoute(ech *echo.Echo) {
 	ech.GET("/adminById/:id", repository.GetAdminById(database))
 
 	//User Routes
+	ech.GET("/user-list", repository.GetUserList(database))
 	ech.POST("/register", repository.Register(database))
 	ech.POST("/login", repository.Login(database))
 }

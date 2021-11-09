@@ -20,3 +20,8 @@ type User struct {
 	Profile_pic   string `gorm:"type:varchar(300);not null"`
 	Token         string `gorm:"type:varchar(255);not null"`
 }
+
+type UserList struct {
+	Nik	string
+	Nama string
+}
