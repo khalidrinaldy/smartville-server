@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"smartville-server/config"
 	"smartville-server/routes"
@@ -24,6 +25,7 @@ func main()  {
 	//Set PORT
 	port := os.Getenv("PORT")
 	if port == "" {
+		fmt.Println("port no ERROR")
 		port = cfg.Port
 	}
 
