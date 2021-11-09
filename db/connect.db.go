@@ -16,7 +16,7 @@ func OpenDatabase() *gorm.DB {
 	// 	cfg.Database.Username,
 	// 	cfg.Database.Password,
 	// 	cfg.Database.Name)
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s sslmode=require",
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_USER"),
