@@ -7,6 +7,8 @@ import (
 	"smartville-server/helper"
 	"strconv"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -34,9 +36,22 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
 		}
 
-		header := c.Request().Header.Get("Authorization")
+		//Check token is valid or invalid
+		headerToken := c.Request().Header.Get("Authorization")
+		claims := &entity.Claims{}
+		token, err := jwt.ParseWithClaims(headerToken, claims, func(t *jwt.Token) (interface{}, error) {
+			return os.Getenv("SECRET_KEY"), nil
+		})
+		if err !=nil {
+			if err == jwt.ErrSignatureInvalid {
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+			}
+		}
+		if !token.Valid {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+		}
 		
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, header, &user))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, headerToken, &user))
 		// return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &user))
 	}
 }
