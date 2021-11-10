@@ -40,7 +40,7 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
 		headerToken = strings.ReplaceAll(headerToken, " ", "")
 		if user.Token != headerToken {
-			c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
 		}
 		
 		//return c.JSON(http.StatusOK, helper.ResultResponse(false, headerToken, &user))
