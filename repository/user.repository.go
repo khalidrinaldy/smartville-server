@@ -6,6 +6,7 @@ import (
 	"smartville-server/entity"
 	"smartville-server/helper"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -38,6 +39,8 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 
 		//Check token is valid or invalid
 		headerToken := c.Request().Header.Get("Authorization")
+		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
+		headerToken = strings.ReplaceAll(headerToken, " ", "")
 		claims := &entity.Claims{}
 		token, err := jwt.ParseWithClaims(headerToken, claims, func(t *jwt.Token) (interface{}, error) {
 			return os.Getenv("SECRET_KEY"), nil
