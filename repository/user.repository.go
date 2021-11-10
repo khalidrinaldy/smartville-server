@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	//"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -41,18 +41,18 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 		headerToken := c.Request().Header.Get("Authorization")
 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
 		headerToken = strings.ReplaceAll(headerToken, " ", "")
-		claims := &entity.Claims{}
-		token, err := jwt.ParseWithClaims(headerToken, claims, func(t *jwt.Token) (interface{}, error) {
-			return os.Getenv("SECRET_KEY"), nil
-		})
-		if err !=nil {
-			if err == jwt.ErrSignatureInvalid {
-				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
-			}
-		}
-		if !token.Valid {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
-		}
+		// claims := &entity.Claims{}
+		// token, err := jwt.ParseWithClaims(headerToken, claims, func(t *jwt.Token) (interface{}, error) {
+		// 	return os.Getenv("SECRET_KEY"), nil
+		// })
+		// if err !=nil {
+		// 	if err == jwt.ErrSignatureInvalid {
+		// 		return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+		// 	}
+		// }
+		// if !token.Valid {
+		// 	return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+		// }
 		
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, headerToken, &user))
 		// return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &user))
