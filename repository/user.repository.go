@@ -55,7 +55,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.Nama = c.FormValue("nama")
 		user.Email = c.FormValue("email")
 		user.Password = c.FormValue("password")
-		user.Tgl_lahir,_ = time.Parse("2020-05-11", c.FormValue("tgl_lahir"))
+		user.Tgl_lahir,_ = time.Parse(time.RFC3339, c.FormValue("tgl_lahir"))
 		user.Alamat = c.FormValue("alamat")
 		user.Dusun = c.FormValue("dusun")
 		user.Rt,_ = strconv.Atoi(c.FormValue("rt"))
