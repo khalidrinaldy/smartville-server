@@ -41,7 +41,7 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 		//nik := claims["nik"].(string)
 		
 
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", claims))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &claims))
 	}
 }
 
