@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -35,7 +36,12 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
 		}
 
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &user))
+		userToken := c.Get("user").(*jwt.Token)
+		claims := userToken.Claims.(*jwt.MapClaims)
+		//nik := claims["nik"].(string)
+		
+
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", claims))
 	}
 }
 
