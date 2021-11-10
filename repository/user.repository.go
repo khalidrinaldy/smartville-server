@@ -110,6 +110,6 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 
 		//Login Success
 		userResult.Password = "hidden"
-		return c.JSON(http.StatusOK, &userResult)
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Login Success", &userResult))
 	}
 }
