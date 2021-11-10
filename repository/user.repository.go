@@ -99,7 +99,7 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 
 		//Check user exist
 		if resLogin.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Username", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Email", ""))
 		}
 
 		//Check Password
