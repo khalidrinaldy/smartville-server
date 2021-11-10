@@ -2,7 +2,7 @@ package repository
 
 import (
 	"net/http"
-	"smartville-server/config"
+	"os"
 	"smartville-server/entity"
 	"smartville-server/helper"
 	"strconv"
@@ -78,11 +78,10 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 		}
+		user.Password = string(hash)
 
 		//Token
-		cfg,_ := config.NewConfig(".env")
-		user.Password = string(hash)
-		user.Token = helper.JwtGenerator(user.Nik, cfg.JWTConfig.SecretKey)
+		user.Token = helper.JwtGenerator(user.Nik, os.Getenv("SECRET_KEY"))
 
 		//Post Register
 		regisResult := db.Create(&user)
