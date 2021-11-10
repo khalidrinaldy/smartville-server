@@ -103,7 +103,7 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Check Password
-		checkPass := bcrypt.CompareHashAndPassword([]byte(userInput.Password), []byte(userResult.Password))
+		checkPass := bcrypt.CompareHashAndPassword([]byte(userResult.Password), []byte(userInput.Password))
 		if checkPass != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Wrong Password", ""))
 		}
