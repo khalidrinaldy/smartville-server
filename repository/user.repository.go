@@ -55,13 +55,22 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.No_hp = c.FormValue("no_hp")
 		user.Profile_pic = c.FormValue("profile_pic")
 
-		//Check user exist
-		userExist := db.Where("email = ?", user.Email).Find(&user)
-		if userExist.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userExist.Error))
+		//Check NIK
+		userNik := db.Where("email = ?", user.Email).Find(&user)
+		if userNik.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userNik.Error))
 		}
-		if userExist.RowsAffected > 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "email already used", ""))
+		if userNik.RowsAffected > 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "NIK Sudah Didaftarkan", ""))
+		}
+
+		//Check Email
+		userEmail := db.Where("email = ?", user.Email).Find(&user)
+		if userEmail.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error))
+		}
+		if userEmail.RowsAffected > 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Sudah Dipakai", ""))
 		}
 
 		//Hashing Password
@@ -99,13 +108,13 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 
 		//Check user exist
 		if resLogin.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Email", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Pernah Didaftarkan", ""))
 		}
 
 		//Check Password
 		checkPass := bcrypt.CompareHashAndPassword([]byte(userResult.Password), []byte(userInput.Password))
 		if checkPass != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Wrong Password", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
 		}
 
 		//Login Success
