@@ -43,7 +43,7 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
 		}
 		
-		//return c.JSON(http.StatusOK, helper.ResultResponse(false, headerToken, &user))
+		user.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &user))
 	}
 }
@@ -98,6 +98,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		if regisResult.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", regisResult.Error))
 		}
+		user.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Register Success", &user))
 	}
 }
