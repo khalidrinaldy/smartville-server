@@ -2,12 +2,12 @@ package repository
 
 import (
 	"net/http"
-	"smartville-server/config"
+	"os"
 	"smartville-server/entity"
 	"smartville-server/helper"
 	"strconv"
+	"strings"
 	"time"
-
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -35,6 +35,15 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
 		}
 
+		//Check token is valid for user id
+		headerToken := c.Request().Header.Get("Authorization")
+		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
+		headerToken = strings.ReplaceAll(headerToken, " ", "")
+		if user.Token != headerToken {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+		}
+		
+		user.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Data Success", &user))
 	}
 }
@@ -46,7 +55,8 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.Nama = c.FormValue("nama")
 		user.Email = c.FormValue("email")
 		user.Password = c.FormValue("password")
-		user.Tgl_lahir,_ = time.Parse("2020-05-11", c.FormValue("tgl_lahir"))
+		user.Tgl_lahir,_ = time.Parse("20060102", c.FormValue("tgl_lahir"))
+		user.Tempat_lahir = c.FormValue("tempat_lahir")
 		user.Alamat = c.FormValue("alamat")
 		user.Dusun = c.FormValue("dusun")
 		user.Rt,_ = strconv.Atoi(c.FormValue("rt"))
@@ -55,13 +65,22 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.No_hp = c.FormValue("no_hp")
 		user.Profile_pic = c.FormValue("profile_pic")
 
-		//Check user exist
-		userExist := db.Where("email = ?", user.Email).Find(&user)
-		if userExist.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userExist.Error))
+		//Check NIK
+		userNik := db.Where("email = ?", user.Email).Find(&user)
+		if userNik.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userNik.Error))
 		}
-		if userExist.RowsAffected > 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "email already used", ""))
+		if userNik.RowsAffected > 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "NIK Sudah Didaftarkan", ""))
+		}
+
+		//Check Email
+		userEmail := db.Where("email = ?", user.Email).Find(&user)
+		if userEmail.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error))
+		}
+		if userEmail.RowsAffected > 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Sudah Dipakai", ""))
 		}
 
 		//Hashing Password
@@ -69,17 +88,17 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		if err != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 		}
+		user.Password = string(hash)
 
 		//Token
-		cfg,_ := config.NewConfig(".env")
-		user.Password = string(hash)
-		user.Token = helper.JwtGenerator(user.Nik, cfg.JWTConfig.SecretKey)
+		user.Token = helper.JwtGenerator(user.Nik, os.Getenv("SECRET_KEY"))
 
 		//Post Register
 		regisResult := db.Create(&user)
 		if regisResult.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", regisResult.Error))
 		}
+		user.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Register Success", &user))
 	}
 }
@@ -99,17 +118,17 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 
 		//Check user exist
 		if resLogin.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Username", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Pernah Didaftarkan", ""))
 		}
 
 		//Check Password
-		checkPass := bcrypt.CompareHashAndPassword([]byte(userInput.Password), []byte(userResult.Password))
+		checkPass := bcrypt.CompareHashAndPassword([]byte(userResult.Password), []byte(userInput.Password))
 		if checkPass != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Wrong Password", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
 		}
 
 		//Login Success
 		userResult.Password = "hidden"
-		return c.JSON(http.StatusOK, &userResult)
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Login Success", &userResult))
 	}
 }

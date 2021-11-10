@@ -5,7 +5,7 @@ import (
 	"path"
 	"smartville-server/db"
 	"smartville-server/repository"
-
+	"smartville-server/middleware"
 	"github.com/labstack/echo"
 )
 
@@ -29,4 +29,5 @@ func InitRoute(ech *echo.Echo) {
 	ech.GET("/user-list", repository.GetUserList(database))
 	ech.POST("/register", repository.Register(database))
 	ech.POST("/login", repository.Login(database))
+	ech.GET("user-id/:id", repository.GetUserById(database), middlewares.IsLoggedIn())
 }

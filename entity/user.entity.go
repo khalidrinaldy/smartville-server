@@ -1,6 +1,10 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+)
 
 // type User struct {
 // 	Id            int64  `gorm:"primaryKey;not null;autoIncrement"`
@@ -40,7 +44,12 @@ type User struct {
 	Token         string `gorm:"not null"`
 }
 
+type Claims struct {
+	Nik string `json:"username"`
+	jwt.StandardClaims
+}
+
 type UserList struct {
-	Nik	string
+	Nik  string
 	Nama string
 }
