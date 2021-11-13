@@ -66,7 +66,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.Profile_pic = c.FormValue("profile_pic")
 
 		//Check NIK
-		userNik := db.Where("email = ?", user.Email).Find(&user)
+		userNik := db.Where("nik = ?", user.Nik).Find(&user)
 		if userNik.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userNik.Error))
 		}
@@ -130,5 +130,36 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 		//Login Success
 		userResult.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Login Success", &userResult))
+	}
+}
+
+func ChangePassword(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var user entity.User
+		email := c.FormValue("email")
+		password := c.FormValue("new_password")
+
+		//Check Email
+		userEmail := db.Where("email = ?", email).Find(&user)
+		if userEmail.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error))
+		}
+		if userEmail.RowsAffected == 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Terdaftar", ""))
+		}
+
+		//Hashing Password
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), 5)
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+		password = string(hash)
+
+		//Change Password
+		setPassword := db.Model(&user).Where("email = ?", email).Update("password", password)
+		if setPassword !=nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", setPassword.Error))
+		}
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
 	}
 }
