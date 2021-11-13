@@ -156,7 +156,7 @@ func ChangePassword(db *gorm.DB) echo.HandlerFunc {
 		password = string(hash)
 
 		//Change Password
-		setPassword := db.Model(&user).Where("email = ?", email).Update("password", password)
+		setPassword := db.Exec("update users set password = ? where email = ?", password, email)
 		if setPassword !=nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error))
 		}
