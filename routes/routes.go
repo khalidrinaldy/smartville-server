@@ -32,5 +32,8 @@ func InitRoute(ech *echo.Echo) {
 	ech.GET("user-id/:id", repository.GetUserById(database), middlewares.IsLoggedIn())
 
 	//Email verification
-	ech.POST("/email-verif", repository.SendEmail(database))
+	ech.POST("/user/email-verif", repository.SendEmail(database))
+
+	//Change password
+	ech.POST("/user/change-password", repository.ChangePassword(database))
 }
