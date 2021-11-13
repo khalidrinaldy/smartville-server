@@ -4,7 +4,9 @@ import (
 	"math/rand"
 	"net/http"
 	"smartville-server/helper"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo"
 	"gorm.io/gorm"
@@ -17,8 +19,9 @@ func SendEmail(db *gorm.DB) echo.HandlerFunc{
 
 		otp := []string{}
 		for i := 0; i < 4; i++ {
+			rand.Seed(time.Now().UnixNano())
 			number := rand.Intn(9-0+1) + 0
-			otp = append(otp, string(number))
+			otp = append(otp, strconv.Itoa(number))
 		}
 		message := strings.Join(otp, "")
 
