@@ -30,4 +30,7 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/register", repository.Register(database))
 	ech.POST("/login", repository.Login(database))
 	ech.GET("user-id/:id", repository.GetUserById(database), middlewares.IsLoggedIn())
+
+	//Email verification
+	ech.POST("/email-verif", repository.SendEmail(database))
 }
