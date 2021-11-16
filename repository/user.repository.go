@@ -3,6 +3,7 @@ package repository
 import (
 	"net/http"
 	"os"
+	"io"
 	"smartville-server/entity"
 	"smartville-server/helper"
 	"strconv"
@@ -161,5 +162,49 @@ func ChangePassword(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
+	}
+}
+
+func UploadPhoto(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var user entity.User
+		resultUser := db.First(&user, c.Param("id"))
+		if resultUser.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", resultUser.Error))
+		}
+
+		file, err := c.FormFile("file")
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+
+		src, err := file.Open()
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+		defer src.Close()
+		// Change the link
+		result, err := os.Create("./data/" + file.Filename)
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+		defer result.Close()
+
+		if _, err = io.Copy(result, src); err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+		
+		//Check token is valid for user id
+		headerToken := c.Request().Header.Get("Authorization")
+		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
+		headerToken = strings.ReplaceAll(headerToken, " ", "")
+		if user.Token != headerToken {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid Token", ""))
+		}
+		uploaded := db.Exec("UPDATE users SET profile_pic = ? where email = ?", result, user.Email)
+		if uploaded.Error !=nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Upload photo gagal", uploaded.Error))
+		}
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Upload photo berhasil", ""))
 	}
 }
