@@ -3,6 +3,7 @@ module smartville-server
 go 1.17
 
 require (
+	github.com/cloudinary/cloudinary-go v1.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/joeshaw/envdecode v0.0.0-20200121155833-099f1fc765bd
 	github.com/joho/godotenv v1.4.0
@@ -13,6 +14,9 @@ require (
 )
 
 require (
+	github.com/creasty/defaults v1.5.1 // indirect
+	github.com/google/uuid v1.2.0 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.10.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

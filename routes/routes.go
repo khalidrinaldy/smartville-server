@@ -1,11 +1,15 @@
 package routes
 
 import (
+	"context"
 	"net/http"
 	"path"
+	"smartville-server/config"
 	"smartville-server/db"
-	"smartville-server/repository"
 	"smartville-server/middleware"
+	"smartville-server/repository"
+
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/labstack/echo"
 )
 
@@ -36,4 +40,22 @@ func InitRoute(ech *echo.Echo) {
 
 	//Change password
 	ech.POST("/user/change-password", repository.ChangePassword(database))
+
+	//Test Upload image
+	ech.POST("/image", func(c echo.Context) error {
+		cld, err := config.CloudConfig()
+		if err != nil {
+			return c.JSON(http.StatusOK, err)
+		}
+		image,_ := c.FormFile("image")
+		uploadResult, err := cld.Upload.Upload(
+			context.Background(),
+			image,
+			uploader.UploadParams{PublicID: "test/"},
+		)
+		if err != nil {
+			return c.JSON(http.StatusOK, err)
+		}
+		return c.JSON(http.StatusOK, uploadResult.URL)
+	})
 }
