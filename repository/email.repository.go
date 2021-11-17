@@ -39,7 +39,7 @@ func SendEmail(db *gorm.DB) echo.HandlerFunc{
 		//Send Email
 		sendErr := helper.SendEmail(to, subject, "Kode OTP kamu : " + messageOTP)
 		if sendErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Sending Email", ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Sending Email", sendErr))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Email Has Been Sent!", map[string]string{
 			"otp" : messageOTP,

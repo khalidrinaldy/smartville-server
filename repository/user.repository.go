@@ -20,7 +20,7 @@ func GetUserList(db *gorm.DB) echo.HandlerFunc {
 		var users []entity.UserList
 		result := db.Raw("SELECT nik, nama from users").Scan(&users)
 		if result.Error!=nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch User List Success", &users))
 	}
@@ -86,7 +86,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		//Hashing Password
 		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err))
 		}
 		user.Password = string(hash)
 
@@ -151,7 +151,7 @@ func ChangePassword(db *gorm.DB) echo.HandlerFunc {
 		//Hashing Password
 		hash, err := bcrypt.GenerateFromPassword([]byte(password), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err))
 		}
 		password = string(hash)
 
