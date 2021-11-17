@@ -10,8 +10,8 @@ import (
 	"smartville-server/db"
 	"smartville-server/middleware"
 	"smartville-server/repository"
-
 	"github.com/cloudinary/cloudinary-go/api/uploader"
+
 	"github.com/labstack/echo"
 )
 

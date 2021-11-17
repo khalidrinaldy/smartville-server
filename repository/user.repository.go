@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"smartville-server/entity"
@@ -8,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -63,7 +65,6 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.Rw,_ = strconv.Atoi(c.FormValue("rw"))
 		user.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
 		user.No_hp = c.FormValue("no_hp")
-		user.Profile_pic = c.FormValue("profile_pic")
 
 		//Check NIK
 		userNik := db.Where("nik = ?", user.Nik).Find(&user)
@@ -92,6 +93,13 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 
 		//Token
 		user.Token = helper.JwtGenerator(user.Nik, os.Getenv("SECRET_KEY"))
+
+		//Upload profile picture
+		imageURL, err := helper.UploadImage(c, "profile_pic", fmt.Sprintf("users/%s/profile", user.Nik), "profile")
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+		user.Profile_pic = imageURL
 
 		//Post Register
 		regisResult := db.Create(&user)
