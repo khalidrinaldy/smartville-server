@@ -45,7 +45,10 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/image", func(c echo.Context) error {
 		cld, err := config.CloudConfig()
 		if err != nil {
-			return c.JSON(http.StatusOK, err)
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"message": "Error occured cloud config",
+				"data": err,
+			})
 		}
 		image,_ := c.FormFile("image")
 		uploadResult, err := cld.Upload.Upload(
@@ -54,8 +57,14 @@ func InitRoute(ech *echo.Echo) {
 			uploader.UploadParams{PublicID: "test/"},
 		)
 		if err != nil {
-			return c.JSON(http.StatusOK, err)
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"message": "Error occured upload image",
+				"data": err,
+			})
 		}
-		return c.JSON(http.StatusOK, uploadResult.URL)
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "Upload success",
+			"data": uploadResult.URL,
+		})
 	})
 }
