@@ -50,7 +50,7 @@ func InitRoute(ech *echo.Echo) {
 				"data": err,
 			})
 		}
-		image := c.FormValue("image")
+		image,_ := c.FormFile("image")
 		uploadResult, err := cld.Upload.Upload(
 			context.Background(),
 			image,
