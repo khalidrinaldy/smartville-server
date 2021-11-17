@@ -2,7 +2,9 @@ package routes
 
 import (
 	"context"
+	"io"
 	"net/http"
+	"os"
 	"path"
 	"smartville-server/config"
 	"smartville-server/db"
@@ -47,24 +49,46 @@ func InitRoute(ech *echo.Echo) {
 		if err != nil {
 			return c.JSON(http.StatusOK, map[string]interface{}{
 				"message": "Error occured cloud config",
-				"data": err,
+				"data":    err,
 			})
 		}
-		image,_ := c.FormFile("image")
+		// Source
+		file, err := c.FormFile("image")
+		if err != nil {
+			return err
+		}
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
+		defer src.Close()
+
+		// Destination
+		dst, err := os.Create(file.Filename)
+		if err != nil {
+			return err
+		}
+		defer dst.Close()
+
+		// Copy
+		if _, err = io.Copy(dst, src); err != nil {
+			return err
+		}
+
 		uploadResult, err := cld.Upload.Upload(
 			context.Background(),
-			image,
+			file.Filename,
 			uploader.UploadParams{PublicID: "test/"},
 		)
 		if err != nil {
 			return c.JSON(http.StatusOK, map[string]interface{}{
 				"message": "Error occured upload image",
-				"data": err.Error(),
+				"data":    err.Error(),
 			})
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"message": "Upload success",
-			"data": uploadResult.URL,
+			"data":    uploadResult.URL,
 		})
 	})
 }
