@@ -80,6 +80,8 @@ func InitRoute(ech *echo.Echo) {
 			file.Filename,
 			uploader.UploadParams{
 				Folder: "test",
+				UseFilename: true,
+				DiscardOriginalFilename: true,
 				FilenameOverride: "Asuna",
 			},
 		)
