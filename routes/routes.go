@@ -78,7 +78,10 @@ func InitRoute(ech *echo.Echo) {
 		uploadResult, err := cld.Upload.Upload(
 			context.Background(),
 			file.Filename,
-			uploader.UploadParams{},
+			uploader.UploadParams{
+				Folder: "test",
+				FilenameOverride: "Asuna",
+			},
 		)
 		if err != nil {
 			return c.JSON(http.StatusOK, map[string]interface{}{
