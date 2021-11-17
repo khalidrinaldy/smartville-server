@@ -59,7 +59,7 @@ func InitRoute(ech *echo.Echo) {
 		if err != nil {
 			return c.JSON(http.StatusOK, map[string]interface{}{
 				"message": "Error occured upload image",
-				"data": err,
+				"data": err.Error(),
 			})
 		}
 		return c.JSON(http.StatusOK, map[string]interface{}{
