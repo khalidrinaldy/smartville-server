@@ -11,7 +11,7 @@ import (
 	"github.com/cloudinary/cloudinary-go/api/uploader"
 )
 
-func UploadImage(c echo.Context, formName, folderName, fileName string) (string, error) {
+func UploadImage(c echo.Context, publicID, formName, folderName, fileName string) (string, error) {
 	cld, err := config.CloudConfig()
 	if err != nil {
 		return "Config Cloud Error", err
@@ -43,15 +43,17 @@ func UploadImage(c echo.Context, formName, folderName, fileName string) (string,
 		context.Background(),
 		file.Filename,
 		uploader.UploadParams{
+			PublicID: publicID,
 			Folder:           folderName,
 			UseFilename:      true,
+			UniqueFilename:   false,
 			FilenameOverride: fileName,
 		},
 	)
 	if err != nil {
 		return "Error While Uploading File", err
 	}
-	return uploadResult.URL,err
+	return uploadResult.URL, err
 	// return c.JSON(http.StatusOK, map[string]interface{}{
 	// 	"message": "Upload success",
 	// 	"data":    uploadResult.URL,
