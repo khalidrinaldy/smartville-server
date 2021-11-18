@@ -171,3 +171,36 @@ func ChangePassword(db *gorm.DB) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
 	}
 }
+
+func EditProfile(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var user entity.User
+		user.Nama = c.FormValue("nama")
+		user.Alamat = c.FormValue("alamat")
+		user.No_hp = c.FormValue("no_hp")
+		user.Email = c.FormValue("email")
+		user.Password = c.FormValue("password")
+		user.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
+
+		//Hashing Password
+		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err))
+		}
+		user.Password = string(hash)
+
+		//Update profile
+		resultEdit := db.Model(&user).Where("id = ?", c.Param("id")).Updates(map[string]interface{}{
+			"nama": user.Nama,
+			"alamat": user.Alamat,
+			"no_hp": user.No_hp,
+			"email": user.Email,
+			"password": user.Password,
+		})
+		if resultEdit.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+		}
+		user.Password = "(Password Updated)"
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Profile Success", &user))
+	}
+}
