@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"path"
 	"smartville-server/db"
-	"smartville-server/repository"
 	"smartville-server/middleware"
+	"smartville-server/repository"
 	"github.com/labstack/echo"
 )
 
