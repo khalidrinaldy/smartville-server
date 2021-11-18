@@ -95,7 +95,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		user.Token = helper.JwtGenerator(user.Nik, os.Getenv("SECRET_KEY"))
 
 		//Upload profile picture
-		imageURL, err := helper.UploadImage(c, "profile_pic", fmt.Sprintf("users/%s/profile", user.Nik), "profile")
+		imageURL, err := helper.UploadImage(c, user.Nik, "profile_pic", fmt.Sprintf("users/%s/profile", user.Nik), "profile")
 		if err != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 		}

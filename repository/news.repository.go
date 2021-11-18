@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
@@ -41,7 +40,7 @@ func AddNews(db *gorm.DB) echo.HandlerFunc {
 		news.Tanggal_terbit = time.Now()
 
 		//Upload news image
-		imageURL, err := helper.UploadImage(c, "foto_berita", "news", fmt.Sprintf("%s", news.Judul_berita))
+		imageURL, err := helper.UploadImage(c, news.Judul_berita, "foto_berita", "news", news.Judul_berita)
 		if err != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 		}
@@ -67,7 +66,7 @@ func EditNews(db *gorm.DB) echo.HandlerFunc {
 		//check file empty or not
 		if err != http.ErrMissingFile {
 			//Upload news image
-			imageURL, err := helper.UploadImage(c, "foto_berita", "news", fmt.Sprintf("%s", news.Judul_berita))
+			imageURL, err := helper.UploadImage(c, news.Judul_berita, "foto_berita", "news", news.Judul_berita)
 			if err != nil {
 				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 			}
