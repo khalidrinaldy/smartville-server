@@ -79,7 +79,7 @@ func EditNews(db *gorm.DB) echo.HandlerFunc {
 				"deskripsi_berita": news.Deskripsi_berita,
 				"foto_berita": news.Foto_berita,
 			})
-			if resultEdit != nil {
+			if resultEdit.Error != nil {
 				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultEdit.Error))
 			}
 			return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit News Success", &news))
@@ -92,7 +92,7 @@ func EditNews(db *gorm.DB) echo.HandlerFunc {
 			"deskripsi_berita": news.Deskripsi_berita,
 			"tanggal_terbit": news.Tanggal_terbit,
 		})
-		if resultEdit != nil {
+		if resultEdit.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultEdit.Error))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit News Success", &news))
