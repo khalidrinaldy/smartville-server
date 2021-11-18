@@ -45,7 +45,7 @@ func UploadImage(c echo.Context, formName, folderName, fileName string) (string,
 		uploader.UploadParams{
 			Folder:           folderName,
 			UseFilename:      true,
-			UniqueFilename:   true,
+			UniqueFilename:   false,
 			FilenameOverride: fileName,
 		},
 	)
