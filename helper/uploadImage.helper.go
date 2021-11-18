@@ -45,13 +45,14 @@ func UploadImage(c echo.Context, formName, folderName, fileName string) (string,
 		uploader.UploadParams{
 			Folder:           folderName,
 			UseFilename:      true,
+			UniqueFilename:   true,
 			FilenameOverride: fileName,
 		},
 	)
 	if err != nil {
 		return "Error While Uploading File", err
 	}
-	return uploadResult.URL,err
+	return uploadResult.URL, err
 	// return c.JSON(http.StatusOK, map[string]interface{}{
 	// 	"message": "Upload success",
 	// 	"data":    uploadResult.URL,
