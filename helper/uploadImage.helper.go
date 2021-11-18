@@ -46,7 +46,6 @@ func UploadImage(c echo.Context, formName, folderName, fileName string) (string,
 			Folder:           folderName,
 			UseFilename:      true,
 			UniqueFilename:   false,
-			FilenameOverride: fileName,
 		},
 	)
 	if err != nil {
