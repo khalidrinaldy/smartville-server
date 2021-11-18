@@ -36,4 +36,11 @@ func InitRoute(ech *echo.Echo) {
 
 	//Change password
 	ech.POST("/user/change-password", repository.ChangePassword(database))
+
+	//News Routes
+	ech.GET("/news", repository.GetAllNews(database))
+	ech.GET("/news/:id", repository.GetNewsById(database))
+	ech.POST("/news", repository.AddNews(database))
+	ech.PUT("/news/:id", repository.EditNews(database))
+	ech.DELETE("/news/:id", repository.DeleteNews(database))
 }
