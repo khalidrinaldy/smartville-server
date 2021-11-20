@@ -219,7 +219,35 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
 		headerToken = strings.ReplaceAll(headerToken, " ", "")
 
-		//Update profile
+		//Check upload photo
+		_, photoErr := c.FormFile("profile_pic")
+		if photoErr != http.ErrMissingFile {
+			//Upload profile picture
+			imageURL, err := helper.UploadImage(c, user.Nik, "profile_pic", fmt.Sprintf("users/%s/profile", user.Nik), "profile")
+			if err != nil {
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+			}
+			user.Profile_pic = imageURL
+
+			//Update profile
+			resultEdit := db.Model(&user).Where("token = ?", headerToken).Updates(map[string]interface{}{
+				"nama":     user.Nama,
+				"alamat":   user.Alamat,
+				"no_hp":    user.No_hp,
+				"email":    user.Email,
+				"password": user.Password,
+				"profile_pic": user.Profile_pic,
+			})
+			if resultEdit.Error != nil {
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+			}
+			if resultEdit.RowsAffected == 0 {
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token not found", ""))
+			}
+			return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Profile Success", &user))
+		}
+
+		//Update profile without photo
 		resultEdit := db.Model(&user).Where("token = ?", headerToken).Updates(map[string]interface{}{
 			"nama":     user.Nama,
 			"alamat":   user.Alamat,
