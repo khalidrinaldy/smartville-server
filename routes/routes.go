@@ -38,7 +38,7 @@ func InitRoute(ech *echo.Echo) {
 
 	//Change password
 	ech.PUT("/user/forgot-password", repository.ChangeForgotPassword(database))
-	ech.PUT("/user/change-password", repository.ChangePasswordProfile(database))
+	ech.PUT("/user/change-password", repository.ChangePasswordProfile(database), middlewares.IsLoggedIn())
 
 	//News Routes
 	ech.GET("/news", repository.GetAllNews(database))
