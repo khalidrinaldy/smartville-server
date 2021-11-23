@@ -23,6 +23,10 @@ func InitRoute(ech *echo.Echo) {
 
 	//Admin Routes
 	ech.GET("/admins", repository.GetAdminList(database))
+	ech.GET("/adminbytoken", repository.GetAdminByToken(database), middlewares.IsLoggedIn())
+	ech.POST("/admin/register", repository.RegisterAdmin(database))
+	ech.POST("/admin/login", repository.LoginAdmin(database))
+	ech.PUT("/admin/edit", repository.EditProfileAdmin(database), middlewares.IsLoggedIn())
 
 	//User Routes
 	ech.GET("/user-list", repository.GetUserList(database))
