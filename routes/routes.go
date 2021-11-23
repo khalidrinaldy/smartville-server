@@ -23,7 +23,6 @@ func InitRoute(ech *echo.Echo) {
 
 	//Admin Routes
 	ech.GET("/admins", repository.GetAdminList(database))
-	ech.GET("/adminById/:id", repository.GetAdminById(database))
 
 	//User Routes
 	ech.GET("/user-list", repository.GetUserList(database))
@@ -52,6 +51,13 @@ func InitRoute(ech *echo.Echo) {
 	ech.GET("/birth-regis", repository.GetAllBirthRegistration(database))
 	ech.GET("/birth-regis/:id", repository.GetBirthRegistrationById(database))
 	ech.POST("/birth-regis", repository.AddBirthRegistration(database), middlewares.IsLoggedIn())
-	ech.PUT("/birth-regis/:id", repository.EditBirthRegistration(database))
-	ech.DELETE("/birth-regis/:id", repository.DeleteBirthRegistration(database))
+	ech.PUT("/birth-regis/:id", repository.EditBirthRegistration(database), middlewares.IsLoggedIn())
+	ech.DELETE("/birth-regis/:id", repository.DeleteBirthRegistration(database), middlewares.IsLoggedIn())
+
+	//Domicile Registration Routes
+	ech.GET("/domicile-regis", repository.GetAllDomicileRegistration(database))
+	ech.GET("/domicile-regis/:id", repository.GetDomicileRegistrationById(database))
+	ech.POST("/domicile-regis", repository.AddDomicileRegistration(database), middlewares.IsLoggedIn())
+	ech.PUT("/domicile-regis/:id", repository.EditDomicileRegistration(database), middlewares.IsLoggedIn())
+	ech.DELETE("/domicile-regis/:id", repository.DeleteDomicileRegistration(database), middlewares.IsLoggedIn())
 }

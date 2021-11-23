@@ -1,11 +1,9 @@
 package repository
 
 import (
-	"fmt"
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
-	"strconv"
 	"strings"
 	"time"
 
@@ -13,35 +11,35 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAllBirthRegistration(db *gorm.DB) echo.HandlerFunc{
+func GetAllDomicileRegistration(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
-		var births []entity.BirthRegistration
-		result := db.Find(&births)
+		var domiciles []entity.DomicileRegistration
+		result := db.Find(&domiciles)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Birth Data Success", &births))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Domicile Data Success", &domiciles))
 	}
 }
 
-func GetBirthRegistrationById(db *gorm.DB) echo.HandlerFunc {
+func GetDomicileRegistrationById(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var birth entity.BirthRegistration
-		result := db.First(&birth, c.Param("id"))
+		var domicile entity.DomicileRegistration
+		result := db.First(&domicile, c.Param("id"))
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
 		}
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "BirthRegistration Id Not Found", result.RowsAffected))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Domicile Registration Id Not Found", result.RowsAffected))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Birth Data Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Domicile Data Success", &domicile))
 	}
 }
 
-func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+func AddDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user entity.User
-		var birth entity.BirthRegistration
+		var domicile entity.DomicileRegistration
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -58,30 +56,26 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Get Value From Body
-		birth.UserNik = user.Nik
-		birth.Nama_bayi = c.FormValue("nama_bayi")
-		birth.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
-		birth.Nama_ayah = c.FormValue("nama_ayah")
-		birth.Nama_ibu = c.FormValue("nama_ibu")
-		birth.Anak_ke,_ = strconv.Atoi(c.FormValue("anak_ke"))
-		birth.Tanggal_kelahiran,_ = time.Parse(
-			"2006-01-02T15:04:05+0700", 
-			fmt.Sprintf("%sT%s+0700", c.FormValue("tgl_lahir"), c.FormValue("waktu_lahir")))
-		birth.Alamat_kelahiran = c.FormValue("alamat_kelahiran")
+		domicile.UserNik = user.Nik
+		domicile.Nik_pemohon = c.FormValue("nik_pemohon")
+		domicile.Nama_pemohon = c.FormValue("nama_pemohon")
+		domicile.Tgl_lahir,_ = time.Parse("20060102", c.FormValue("tgl_lahir"))
+		domicile.Asal_domisili = c.FormValue("asal_domisili")
+		domicile.Tujuan_domisili = c.FormValue("tujuan_domisili")
 
-		//Post birth registration
-		resultBirth := db.Create(&birth)
-		if resultBirth.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultBirth.Error))
+		//Post Domicile registration
+		resultDomicile := db.Create(&domicile)
+		if resultDomicile.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDomicile.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Birth Registration Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Domicile Registration Success", &domicile))
 	}
 }
 
-func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+func EditDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var admin entity.Admin
-		var birth entity.BirthRegistration
+		var domicile entity.DomicileRegistration
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -101,37 +95,31 @@ func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Get Value From Body
-		birth.Nama_bayi = c.FormValue("nama_bayi")
-		birth.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
-		birth.Nama_ayah = c.FormValue("nama_ayah")
-		birth.Nama_ibu = c.FormValue("nama_ibu")
-		birth.Anak_ke,_ = strconv.Atoi(c.FormValue("anak_ke"))
-		birth.Tanggal_kelahiran,_ = time.Parse(
-			"2006-01-02T15:04:05+0700", 
-			fmt.Sprintf("%sT%s+0700", c.FormValue("tgl_lahir"), c.FormValue("waktu_lahir")))
-		birth.Alamat_kelahiran = c.FormValue("alamat_kelahiran")
+		domicile.Nik_pemohon = c.FormValue("nik_pemohon")
+		domicile.Nama_pemohon = c.FormValue("nama_pemohon")
+		domicile.Tgl_lahir,_ = time.Parse("20060102", c.FormValue("tgl_lahir"))
+		domicile.Asal_domisili = c.FormValue("asal_domisili")
+		domicile.Tujuan_domisili = c.FormValue("tujuan_domisili")
 
-		//PUT request
-		resultEdit := db.Model(&birth).Where("id = ?", c.Param("id")).Updates(map[string]interface{}{
-			"nama_bayi": birth.Nama_bayi,
-			"jenis_kelamin": birth.Jenis_kelamin,
-			"nama_ayah": birth.Nama_ayah,
-			"nama_ibu": birth.Nama_ibu,
-			"anak_ke": birth.Anak_ke,
-			"tanggal_kelahiran": birth.Tanggal_kelahiran,
-			"alamat_kelahiran": birth.Alamat_kelahiran,
+		//PUT Request
+		resultEdit := db.Model(&domicile).Where("id = ?", c.Param("id")).Updates(map[string]interface{}{
+			"nik_pemohon": domicile.Nik_pemohon,
+			"nama_pemohon": domicile.Nama_pemohon,
+			"tgl_lahir": domicile.Tgl_lahir,
+			"asal_domisili": domicile.Asal_domisili,
+			"tujuan_domisili": domicile.Tujuan_domisili,
 		})
 		if resultEdit.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Birth Registration Data Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Domicile Registration Data Success", &domicile))
 	}
 }
 
-func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+func DeleteDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var admin entity.Admin
-		var birth entity.BirthRegistration
+		var domicile entity.DomicileRegistration
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -151,10 +139,10 @@ func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//DELETE
-		resultDelete := db.Delete(&birth, c.Param("id"))
+		resultDelete := db.Delete(&domicile, c.Param("id"))
 		if resultDelete.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Birth Registration Data Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Domicile Registration Data Success", &domicile))
 	}
 }
