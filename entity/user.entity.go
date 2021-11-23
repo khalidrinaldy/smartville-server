@@ -26,22 +26,23 @@ import (
 // }
 
 type User struct {
-	Id            int64  `gorm:"primaryKey;not null;autoIncrement"`
-	Nik           string `gorm:"primaryKey;not null"`
-	Nama          string `gorm:"not null"`
-	Email         string `gorm:"not null"`
-	Password      string `gorm:"not null"`
-	Tgl_lahir     time.Time
-	Tempat_lahir  string `gorm:"not null"`
-	Alamat        string `gorm:"not null"`
-	Dusun         string `gorm:"not null"`
-	Rt            int    `gorm:"not null"`
-	Rw            int    `gorm:"not null"`
-	Jenis_kelamin bool   `gorm:"not null"`
-	No_hp         string `gorm:"not null"`
-	Role          string `gorm:"default:user"`
-	Profile_pic   string `gorm:"not null"`
-	Token         string `gorm:"not null"`
+	Id                 int64  `gorm:"primaryKey;not null;autoIncrement"`
+	Nik                string `gorm:"primaryKey;not null"`
+	Nama               string `gorm:"not null"`
+	Email              string `gorm:"not null"`
+	Password           string `gorm:"not null"`
+	Tgl_lahir          time.Time
+	Tempat_lahir       string              `gorm:"not null"`
+	Alamat             string              `gorm:"not null"`
+	Dusun              string              `gorm:"not null"`
+	Rt                 int                 `gorm:"not null"`
+	Rw                 int                 `gorm:"not null"`
+	Jenis_kelamin      bool                `gorm:"not null"`
+	No_hp              string              `gorm:"not null"`
+	Role               string              `gorm:"default:user"`
+	Profile_pic        string              `gorm:"not null"`
+	Token              string              `gorm:"not null"`
+	BirthRegistrations []BirthRegistration `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
 }
 
 type Claims struct {
