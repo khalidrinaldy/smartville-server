@@ -30,13 +30,16 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/register", repository.Register(database))
 	ech.POST("/login", repository.Login(database))
 	ech.GET("/user-id/:id", repository.GetUserById(database), middlewares.IsLoggedIn())
-	ech.PUT("/user/edit/:id", repository.EditProfile(database), middlewares.IsLoggedIn())
+	ech.GET("/userbytoken", repository.GetUserByToken(database), middlewares.IsLoggedIn())
+	ech.PUT("/user/edit", repository.EditProfile(database), middlewares.IsLoggedIn())
 
 	//Email verification
 	ech.POST("/user/email-verif", repository.SendEmail(database))
 
 	//Change password
-	ech.POST("/user/change-password", repository.ChangePassword(database))
+	ech.POST("/user/check-password", repository.CheckPassword(database), middlewares.IsLoggedIn())
+	ech.PUT("/user/forgot-password", repository.ChangeForgotPassword(database))
+	ech.PUT("/user/change-password", repository.ChangePasswordProfile(database), middlewares.IsLoggedIn())
 
 	//News Routes
 	ech.GET("/news", repository.GetAllNews(database))
@@ -44,4 +47,11 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/news", repository.AddNews(database))
 	ech.PUT("/news/:id", repository.EditNews(database))
 	ech.DELETE("/news/:id", repository.DeleteNews(database))
+
+	//Birth Registration Routes
+	ech.GET("/birth-regis", repository.GetAllBirthRegistration(database))
+	ech.GET("/birth-regis/:id", repository.GetBirthRegistrationById(database))
+	ech.POST("/birth-regis", repository.AddBirthRegistration(database), middlewares.IsLoggedIn())
+	ech.PUT("/birth-regis/:id", repository.EditBirthRegistration(database))
+	ech.DELETE("/birth-regis/:id", repository.DeleteBirthRegistration(database))
 }
