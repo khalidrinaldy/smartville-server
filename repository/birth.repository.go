@@ -77,3 +77,46 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Birth Registration Success", &birth))
 	}
 }
+
+func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var birth entity.BirthRegistration
+
+		//Get Value From Body
+		birth.Nama_bayi = c.FormValue("nama_bayi")
+		birth.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
+		birth.Nama_ayah = c.FormValue("nama_ayah")
+		birth.Nama_ibu = c.FormValue("nama_ibu")
+		birth.Anak_ke,_ = strconv.Atoi(c.FormValue("anak_ke"))
+		birth.Tanggal_kelahiran,_ = time.Parse(
+			"2006-01-02T15:04:05+0700", 
+			fmt.Sprintf("%sT%s+0700", c.FormValue("tgl_lahir"), c.FormValue("waktu_lahir")))
+		birth.Alamat_kelahiran = c.FormValue("alamat_kelahiran")
+
+		//PUT request
+		resultEdit := db.Model(&birth).Where("id = ?", c.Param("id")).Updates(map[string]interface{}{
+			"nama_bayi": birth.Nama_bayi,
+			"jenis_kelamin": birth.Jenis_kelamin,
+			"nama_ayah": birth.Nama_ayah,
+			"nama_ibu": birth.Nama_ibu,
+			"anak_ke": birth.Anak_ke,
+			"tanggal_kelahiran": birth.Tanggal_kelahiran,
+			"alamat_kelahiran": birth.Alamat_kelahiran,
+		})
+		if resultEdit.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+		}
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Birth Registration Data Success", &birth))
+	}
+}
+
+func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var birth entity.BirthRegistration
+		resultDelete := db.Delete(&birth, c.Param("id"))
+		if resultDelete.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
+		}
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Birth Registration Data Success", &birth))
+	}
+}

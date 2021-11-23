@@ -47,4 +47,11 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/news", repository.AddNews(database))
 	ech.PUT("/news/:id", repository.EditNews(database))
 	ech.DELETE("/news/:id", repository.DeleteNews(database))
+
+	//Birth Registration Routes
+	ech.GET("/birth-regis", repository.GetAllBirthRegistration(database))
+	ech.GET("/birth-regis/:id", repository.GetBirthRegistrationById(database))
+	ech.POST("/birth-regis", repository.AddBirthRegistration(database), middlewares.IsLoggedIn())
+	ech.PUT("/birth-regis/:id", repository.EditBirthRegistration(database))
+	ech.DELETE("/birth-regis/:id", repository.DeleteBirthRegistration(database))
 }
