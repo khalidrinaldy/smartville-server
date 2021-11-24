@@ -61,6 +61,7 @@ func AddReport(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Get Value From Body
+		report.UserNik = user.Nik
 		report.Nama_pelapor = c.FormValue("nama_pelapor")
 		report.Deskripsi = c.FormValue("deskripsi")
 		report.Jenis_laporan = c.FormValue("jenis_laporan")
