@@ -44,6 +44,7 @@ type User struct {
 	Token                 string                 `gorm:"not null"`
 	BirthRegistrations    []BirthRegistration    `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
 	DomicileRegistrations []DomicileRegistration `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
+	IntroductionMails     []IntroductionMail     `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
 }
 
 type Claims struct {

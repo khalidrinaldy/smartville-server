@@ -64,4 +64,11 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/domicile-regis", repository.AddDomicileRegistration(database), middlewares.IsLoggedIn())
 	ech.PUT("/domicile-regis/:id", repository.EditDomicileRegistration(database), middlewares.IsLoggedIn())
 	ech.DELETE("/domicile-regis/:id", repository.DeleteDomicileRegistration(database), middlewares.IsLoggedIn())
+
+	//Introduction Mail Registration Routes
+	ech.GET("/introductionmail", repository.GetAllIntroductionMail(database))
+	ech.GET("/introductionmail/:id", repository.GetIntroductionMailById(database))
+	ech.POST("/introductionmail", repository.AddIntroductionMail(database), middlewares.IsLoggedIn())
+	ech.PUT("/introductionmail/:id", repository.EditIntroductionMail(database), middlewares.IsLoggedIn())
+	ech.DELETE("/introductionmail/:id", repository.DeleteIntroductionMail(database), middlewares.IsLoggedIn())
 }
