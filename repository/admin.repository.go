@@ -133,6 +133,7 @@ func EditProfileAdmin(db *gorm.DB) echo.HandlerFunc {
 		var admin entity.Admin
 		admin.Nama = c.FormValue("nama")
 		admin.Email = c.FormValue("email")
+		admin.Password = c.FormValue("password")
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
