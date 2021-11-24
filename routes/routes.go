@@ -78,4 +78,11 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/report", repository.AddReport(database), middlewares.IsLoggedIn())
 	ech.PUT("/report/:id", repository.EditReport(database), middlewares.IsLoggedIn())
 	ech.DELETE("/report/:id", repository.DeleteReport(database), middlewares.IsLoggedIn())
+
+	//Financial Help Routes
+	ech.GET("/financialhelp", repository.GetAllFinancialHelp(database))
+	ech.GET("/financialhelp/:id", repository.GetFinancialHelpById(database))
+	ech.POST("/financialhelp", repository.AddFinancialHelp(database), middlewares.IsLoggedIn())
+	ech.PUT("/financialhelp/:id", repository.EditFinancialHelp(database), middlewares.IsLoggedIn())
+	ech.DELETE("/financialhelp/:id", repository.DeleteFinancialHelp(database), middlewares.IsLoggedIn())
 }
