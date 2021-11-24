@@ -56,6 +56,7 @@ func RegisterAdmin(db *gorm.DB) echo.HandlerFunc {
 		//Get Value From Body
 		admin.Email = c.FormValue("email")
 		admin.Nama = c.FormValue("nama")
+		admin.Password = c.FormValue("password")
 
 		//Check Email
 		adminEmail := db.Where("email = ?", admin.Email).Find(&admin)
