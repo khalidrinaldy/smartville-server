@@ -16,7 +16,7 @@ import (
 func GetAdminList(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var admins []entity.Admin
-		result := db.Raw("SELECT id, nama, email, profil_pic from admins").Scan(&admins)
+		result := db.Raw("SELECT id, nama, email, profile_pic from admins").Scan(&admins)
 
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
