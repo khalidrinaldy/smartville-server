@@ -1,47 +1,49 @@
 package repository
 
 import (
-	"fmt"
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/labstack/echo"
 	"gorm.io/gorm"
 )
 
-func GetAllBirthRegistration(db *gorm.DB) echo.HandlerFunc{
+func GetAllFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var births []entity.BirthRegistration
-		result := db.Find(&births)
+		var financialHelps []entity.FinancialHelp
+
+		//Query
+		result := db.Find(&financialHelps)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Birth Data Success", &births))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch FinancialHelp Data Success", &financialHelps))
 	}
 }
 
-func GetBirthRegistrationById(db *gorm.DB) echo.HandlerFunc {
+func GetFinancialHelpById(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var birth entity.BirthRegistration
-		result := db.First(&birth, c.Param("id"))
+		var financialHelp entity.FinancialHelp
+
+		//Query
+		result := db.First(&financialHelp, c.Param("id"))
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
 		}
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "BirthRegistration Id Not Found", result.RowsAffected))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "FinancialHelp Id Not Found", result.RowsAffected))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Birth Data Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch FinancialHelp Data Success", &financialHelp))
 	}
 }
 
-func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+func AddFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user entity.User
-		var birth entity.BirthRegistration
+		var financialHelp entity.FinancialHelp
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -58,30 +60,27 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Get Value From Body
-		birth.UserNik = user.Nik
-		birth.Nama_bayi = c.FormValue("nama_bayi")
-		birth.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
-		birth.Nama_ayah = c.FormValue("nama_ayah")
-		birth.Nama_ibu = c.FormValue("nama_ibu")
-		birth.Anak_ke,_ = strconv.Atoi(c.FormValue("anak_ke"))
-		birth.Tanggal_kelahiran,_ = time.Parse(
-			"2006-01-02T15:04:05+0700", 
-			fmt.Sprintf("%sT%s+0700", c.FormValue("tgl_lahir"), c.FormValue("waktu_lahir")))
-		birth.Alamat_kelahiran = c.FormValue("alamat_kelahiran")
+		financialHelp.UserNik = user.Nik
+		financialHelp.Nama_bantuan = c.FormValue("nama_bantuan")
+		financialHelp.Jenis_bantuan = c.FormValue("jenis_bantuan")
+		financialHelp.Jumlah_dana,_ = strconv.Atoi(c.FormValue("jumlah_dana"))
+		financialHelp.Alokasi_dana,_ = strconv.Atoi(c.FormValue("alokasi_dana"))
+		financialHelp.Dana_terealisasi,_ = strconv.Atoi(c.FormValue("dana_terealisasi"))
+		financialHelp.Sisa_dana_bantuan,_ = strconv.Atoi(c.FormValue("sisa_dana_bantuan"))
 
-		//Post birth registration
-		resultBirth := db.Create(&birth)
-		if resultBirth.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultBirth.Error))
+		//POST Request
+		resultAdd := db.Create(&financialHelp)
+		if resultAdd.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Birth Registration Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add FinancialHelp Success", &financialHelp))
 	}
 }
 
-func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+func EditFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var admin entity.Admin
-		var birth entity.BirthRegistration
+		var financialHelp entity.FinancialHelp
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -101,37 +100,33 @@ func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Get Value From Body
-		birth.Nama_bayi = c.FormValue("nama_bayi")
-		birth.Jenis_kelamin,_ = strconv.ParseBool(c.FormValue("jenis_kelamin"))
-		birth.Nama_ayah = c.FormValue("nama_ayah")
-		birth.Nama_ibu = c.FormValue("nama_ibu")
-		birth.Anak_ke,_ = strconv.Atoi(c.FormValue("anak_ke"))
-		birth.Tanggal_kelahiran,_ = time.Parse(
-			"2006-01-02T15:04:05+0700", 
-			fmt.Sprintf("%sT%s+0700", c.FormValue("tgl_lahir"), c.FormValue("waktu_lahir")))
-		birth.Alamat_kelahiran = c.FormValue("alamat_kelahiran")
+		financialHelp.Nama_bantuan = c.FormValue("nama_bantuan")
+		financialHelp.Jenis_bantuan = c.FormValue("jenis_bantuan")
+		financialHelp.Jumlah_dana,_ = strconv.Atoi(c.FormValue("jumlah_dana"))
+		financialHelp.Alokasi_dana,_ = strconv.Atoi(c.FormValue("alokasi_dana"))
+		financialHelp.Dana_terealisasi,_ = strconv.Atoi(c.FormValue("dana_terealisasi"))
+		financialHelp.Sisa_dana_bantuan,_ = strconv.Atoi(c.FormValue("sisa_dana_bantuan"))
 
-		//PUT request
-		resultEdit := db.Model(&birth).Where("id = ?", c.Param("id")).Updates(map[string]interface{}{
-			"nama_bayi": birth.Nama_bayi,
-			"jenis_kelamin": birth.Jenis_kelamin,
-			"nama_ayah": birth.Nama_ayah,
-			"nama_ibu": birth.Nama_ibu,
-			"anak_ke": birth.Anak_ke,
-			"tanggal_kelahiran": birth.Tanggal_kelahiran,
-			"alamat_kelahiran": birth.Alamat_kelahiran,
+		//PUT Request
+		resultEdit := db.Model(&financialHelp).Where("id = ?", c.Param("id")).Updates(map[string]interface{}{
+			"nama_bantuan":    financialHelp.Nama_bantuan,
+			"jenis_bantuan":   financialHelp.Jenis_bantuan,
+			"jumlah_dana":          financialHelp.Jumlah_dana,
+			"alokasi_dana": financialHelp.Alokasi_dana,
+			"dana_terealisasi":    financialHelp.Dana_terealisasi,
+			"sisa_dana_bantuan":    financialHelp.Sisa_dana_bantuan,
 		})
 		if resultEdit.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Birth Registration Data Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit FinancialHelp Data Success", &financialHelp))
 	}
 }
 
-func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
+func DeleteFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var admin entity.Admin
-		var birth entity.BirthRegistration
+		var financialHelp entity.FinancialHelp
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -151,10 +146,10 @@ func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//DELETE
-		resultDelete := db.Delete(&birth, c.Param("id"))
+		resultDelete := db.Delete(&financialHelp, c.Param("id"))
 		if resultDelete.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Birth Registration Data Success", &birth))
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete FinancialHelp Data Success", &financialHelp))
 	}
 }

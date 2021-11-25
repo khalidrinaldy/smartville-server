@@ -12,4 +12,8 @@ func Migrate(db *gorm.DB) {
 	db.Exec("alter table users add constraint users_unique unique (nik)")
 	db.AutoMigrate(&entity.News{})
 	db.AutoMigrate(&entity.BirthRegistration{})
+	db.AutoMigrate(&entity.DomicileRegistration{})
+	db.AutoMigrate(&entity.IntroductionMail{})
+	db.AutoMigrate(&entity.Report{})
+	db.AutoMigrate(&entity.FinancialHelp{})
 }
