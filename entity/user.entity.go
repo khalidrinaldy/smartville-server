@@ -47,6 +47,8 @@ type User struct {
 	IntroductionMails     []IntroductionMail     `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
 	Reports               []Report               `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
 	FinancialHelps        []FinancialHelp        `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
+	Deaths                []Death                `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
+	History               []History              `gorm:"foreignKey:UserNik;references:Nik" json:",omitempty"`
 }
 
 type Claims struct {
