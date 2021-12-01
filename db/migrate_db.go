@@ -17,4 +17,5 @@ func Migrate(db *gorm.DB) {
 	db.AutoMigrate(&entity.Report{})
 	db.AutoMigrate(&entity.FinancialHelp{})
 	db.AutoMigrate(&entity.Death{})
+	db.AutoMigrate(&entity.History{})
 }

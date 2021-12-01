@@ -40,7 +40,6 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/user/email-verif", repository.SendEmail(database))
 
 	//Change password
-	ech.POST("/user/check-password", repository.CheckPassword(database), middlewares.IsLoggedIn())
 	ech.PUT("/user/forgot-password", repository.ChangeForgotPassword(database))
 	ech.PUT("/user/change-password", repository.ChangePasswordProfile(database), middlewares.IsLoggedIn())
 

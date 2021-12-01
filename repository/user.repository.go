@@ -265,9 +265,42 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 	}
 }
 
-func CheckPassword(db *gorm.DB) echo.HandlerFunc {
+// func CheckPassword(db *gorm.DB) echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		var user entity.User
+
+// 		//Get token
+// 		headerToken := c.Request().Header.Get("Authorization")
+// 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
+// 		headerToken = strings.ReplaceAll(headerToken, " ", "")
+
+// 		//Get user first
+// 		result := db.First(&user, "token = ?", headerToken)
+// 		if result.Error != nil {
+// 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+// 		}
+// 		if result.RowsAffected == 0 {
+// 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token Not Found", ""))
+// 		}
+
+// 		//Compare password
+// 		checkPass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.FormValue("password")))
+// 		if checkPass != nil {
+// 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
+// 		}
+// 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password benar", map[string]interface{}{
+// 			"check": true,
+// 		}))
+// 	}
+// }
+
+func ChangePasswordProfile(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user entity.User
+
+		//Value body new password
+		oldPassword := c.FormValue("old_password")
+		newPassword := c.FormValue("new_password")
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -284,35 +317,20 @@ func CheckPassword(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Compare password
-		checkPass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.FormValue("password")))
+		checkPass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword))
 		if checkPass != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password benar", map[string]interface{}{
-			"check": true,
-		}))
-	}
-}
-
-func ChangePasswordProfile(db *gorm.DB) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		//Value body
-		password := c.FormValue("new_password")
-
-		//Get token
-		headerToken := c.Request().Header.Get("Authorization")
-		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
-		headerToken = strings.ReplaceAll(headerToken, " ", "")
 
 		//Hashing Password
-		hash, err := bcrypt.GenerateFromPassword([]byte(password), 5)
+		hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), 5)
 		if err != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err))
 		}
-		password = string(hash)
+		newPassword = string(hash)
 
 		//Change Password
-		setPassword := db.Exec("UPDATE users SET password = ? where token = ?", password, headerToken)
+		setPassword := db.Exec("UPDATE users SET password = ? where token = ?", newPassword, headerToken)
 		if setPassword.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error))
 		}
