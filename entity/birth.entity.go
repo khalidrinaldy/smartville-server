@@ -11,5 +11,7 @@ type BirthRegistration struct {
 	Nama_ibu          string `gorm:"not null"`
 	Anak_ke           int    `gorm:"not null"`
 	Tanggal_kelahiran time.Time
-	Alamat_kelahiran  string `gorm:"not null"`
+	Alamat_kelahiran  string  `gorm:"not null"`
+	HistoryId         int     `gorm:"not null"`
+	History           History `gorm:"foreignKey:HistoryId;references:Id" json:",omitempty"`
 }

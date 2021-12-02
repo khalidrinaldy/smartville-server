@@ -69,11 +69,24 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 			fmt.Sprintf("%sT%s+0700", c.FormValue("tgl_lahir"), c.FormValue("waktu_lahir")))
 		birth.Alamat_kelahiran = c.FormValue("alamat_kelahiran")
 
+		//Post History Birth
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Pendataan Kelahiran",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr))
+		}
+
 		//Post birth registration
+		birth.HistoryId,_ = strconv.Atoi(postHistory)
 		resultBirth := db.Create(&birth)
 		if resultBirth.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultBirth.Error))
 		}
+
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Birth Registration Success", &birth))
 	}
 }

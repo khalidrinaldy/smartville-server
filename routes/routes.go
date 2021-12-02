@@ -91,4 +91,8 @@ func InitRoute(ech *echo.Echo) {
 	ech.POST("/deathdata", repository.AddDeathData(database), middlewares.IsLoggedIn())
 	ech.PUT("/deathdata/:id", repository.EditDeathData(database), middlewares.IsLoggedIn())
 	ech.DELETE("/deathdata/:id", repository.DeleteDeathData(database), middlewares.IsLoggedIn())
+
+	//History Routes
+	ech.GET("/history", repository.GetAllHistory(database), middlewares.IsLoggedIn())
+	ech.PUT("/history/:history_id", repository.EditStatusHistory(database), middlewares.IsLoggedIn())
 }
