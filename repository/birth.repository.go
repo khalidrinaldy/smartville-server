@@ -18,7 +18,7 @@ func GetAllBirthRegistration(db *gorm.DB) echo.HandlerFunc{
 		var births []entity.BirthRegistration
 		result := db.Find(&births)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Birth Data Success", &births))
 	}
@@ -29,7 +29,7 @@ func GetBirthRegistrationById(db *gorm.DB) echo.HandlerFunc {
 		var birth entity.BirthRegistration
 		result := db.First(&birth, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "BirthRegistration Id Not Found", result.RowsAffected))
@@ -51,7 +51,7 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -84,7 +84,7 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		birth.HistoryId,_ = strconv.Atoi(postHistory)
 		resultBirth := db.Create(&birth)
 		if resultBirth.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultBirth.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultBirth.Error.Error()))
 		}
 
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Birth Registration Success", &birth))
@@ -104,7 +104,7 @@ func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -135,7 +135,7 @@ func EditBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 			"alamat_kelahiran": birth.Alamat_kelahiran,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Birth Registration Data Success", &birth))
 	}
@@ -154,7 +154,7 @@ func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -166,7 +166,7 @@ func DeleteBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 		//DELETE
 		resultDelete := db.Delete(&birth, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Birth Registration Data Success", &birth))
 	}
