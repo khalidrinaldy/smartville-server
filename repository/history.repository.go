@@ -114,7 +114,7 @@ func EditStatusHistory(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Get Value From Body
-		history.Id, _ = strconv.Atoi(c.FormValue("history_id"))
+		history.Id, _ = strconv.Atoi(c.Param("history_id"))
 
 		//Get history by id
 		resHistory := db.First(&history, history.Id)
