@@ -12,8 +12,9 @@ import (
 
 func SendNotification(registrationToken string, notificationMsg string) (string,error) {
 	//Initialize App
-	opt := option.WithCredentialsFile("../firebase-key.json")
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+	opt := option.WithCredentialsFile("firebase-key.json")
+	config := &firebase.Config{ProjectID: "smartville-fcm"}
+	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {
 		return "error initializing app", err
 	}
