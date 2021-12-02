@@ -77,7 +77,7 @@ func AddBirthRegistration(db *gorm.DB) echo.HandlerFunc {
 			c.FormValue("registration_token"),
 		)
 		if postHistoryErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
 		}
 
 		//Post birth registration
