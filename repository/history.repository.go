@@ -32,7 +32,7 @@ func GetAllHistory(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Query
-		resultHistory := db.Where("user_nik = ?", user.Nik).Find(&history)
+		resultHistory := db.Order("updated_at desc").Where("user_nik = ?", user.Nik).Find(&history)
 		if resultHistory.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultHistory.Error.Error()))
 		}
