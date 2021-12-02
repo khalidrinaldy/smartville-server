@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "smartville-fcm",
+  "private_key_id": "3bdc71f312cf38adb447a4a8b9cea436adbfa2c0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCncZJ/Ai5hXsBT\nJ/S++Vtnw7gGsM1hLJfA76m+NBVdy0Ir4WYz+stbPKmBlSAFgtmm0qHK8yTCre/b\nFMFCUIwHor3ad2vcxNYIYCCxFCU3nBQrM/ngKBSDRBl1hHvRFN7wBwmMtBFskaz3\n/caSx7M46vxABzuCAnyWNFSFDZz/t2EPGHu04e/LnjCrqZG8ADIefIbXc4L8PAgx\nSDzeanh5qO9/iQY6UeFYlahKxwlZs1kGX+rhVRBFj/JhtQo6cs1twj3vxxPJtqtZ\nkgH4I3XLq/54baoTkM2ypNAwSmMY6eqLxhEPvstLDM3JsAUaxMNFd0NUMmFUbXBs\nIys0DjW/AgMBAAECggEAI3sGXtFYgJtyR2ydCOaPvtITKZ/HNUMcuO5P2pTwvho2\n4FN3s6X990xIYsP1sBVFB3t0eyvAa1wuCg9A0Et/EJMkhalueq5e6BFue/dX14vE\nHk96MExt5E7G0kcLcYdpohTrqhvx4T6RF094B1w3luT8JJkju+3I9o8KJdN3pBug\naAeQSguqrh+4Qn7hEt3FLytCp2hSbXFvjQN2dEL4Pe7DGp2KWfOHjJZvUx5VcR+o\n2wJKgp5RUrMudQ3CFv3EndAnZygfEHo04WBqr61p+WR6WCcAE/s7QRo6hhu46xOu\nvr3kiOPGzw6EHzJ3uIV4+s8h0mHayRD6mI1n5NXlsQKBgQDiN5mf7DVcD8+pQDBw\nkF2Ps/oGpDZvl+ZPVeuKlyPZLd27FkVMzBlZvlbqjVLWfDYonwfj/ai0Ycwnd7bx\nER+hlCfizm2f6V0BQDknPsiSB+bHBqZgN/Fma8ulr1vm7kNhG6wIntMRu3aIRbDi\n+ObgmH0gTDOtrIENxaPb3HdMdwKBgQC9fRMog/gzUzO1e9JvK+oozgLTn1bGyE7F\nu/x/G/vcbTvgMgXb1rW1jr4Dvn4Wcv2yR+kKptL69fNLo0rR72NKT8ECWA2qEBJ7\ncu7ttbi6TyB9nO1jbUlUD9Sxfkp5BJvr/9ebvKAmH/EO5kKWMjbu7fAwYwMWCtjo\nA6WXFbVa+QKBgQCC+uJuYFv89AKu4sWpR02E+RZZZhdGwdLOONdqpVxSUWZC/wAd\nGUfMWJMGt9Ew8zaAiqQM9EAMQVvttjksl1eTPK9jeVar8nixUrhE6utC8mRC9Ky8\npWeWf++n/ULfETHeNiGD1EIt0Dcva/qhULCNdn1sh/KcKneGu9rGYH6KvQKBgDtR\ngEHarkRC85kIniO3N6J2e2QMKXopEp/L7YtNE1c5ytiwUC011cR0Xv+FDquwa8L3\nx/hRqRJvFC7Fe5KkwgxtUxqMvhpS1bZXkHxRuvZ39s/b5GSPvbjXC9pUkrO3wafr\ne2+BaREGRsxHQOkL5y58xggftsObubNIEPpvDUrhAoGAfMmoicN0Lc9gM1nOM3h+\noegmSMZM/GhK+smCCKg5tyo8M4Teuo95ayWhOZIVcaGfW0i1/J+GsbVM1gY2qCTZ\nP5KwZpW0bj7a2XIaJQiuLSu4M6XDpFrx7SnaKBmX9zxb+BaJy6yQXfUEqaO1ony2\nUTMjqeW/3mdPm8QsoBGpCwI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-6wfp9@smartville-fcm.iam.gserviceaccount.com",
+  "client_id": "117249059878284590649",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-6wfp9%40smartville-fcm.iam.gserviceaccount.com"
+}
