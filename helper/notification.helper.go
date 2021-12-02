@@ -12,7 +12,7 @@ import (
 
 func SendNotification(registrationToken string, notificationMsg string) (string,error) {
 	//Initialize App
-	opt := option.WithCredentialsFile("../firebase-key.json")
+	opt := option.WithCredentialsFile("firebase-key.json")
 	config := &firebase.Config{ProjectID: "smartville-fcm"}
 	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {
