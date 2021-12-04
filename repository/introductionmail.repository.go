@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo"
@@ -64,7 +65,19 @@ func AddIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		introductionMail.Alamat_pemohon = c.FormValue("alamat_pemohon")
 		introductionMail.Jenis_surat = c.FormValue("jenis_surat")
 
+		//Post History Birth
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Pendataan Kelahiran",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+		}
+
 		//POST Request
+		introductionMail.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&introductionMail)
 		if resultAdd.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
