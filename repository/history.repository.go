@@ -57,7 +57,7 @@ func AddHistory(db *gorm.DB, user entity.User, perihal string, registration_toke
 	}
 
 	//Send Notification
-	sendNotif, err := helper.SendNotification(history.Registration_token, history.Deskripsi)
+	sendNotif, err := helper.SendNotification(history.Registration_token, history.Perihal, history.Deskripsi)
 	if err != nil {
 		return sendNotif,err
 	}
@@ -143,7 +143,7 @@ func EditStatusHistory(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		//Send Notification
-		sendNotif, err := helper.SendNotification(history.Registration_token, history.Deskripsi)
+		sendNotif, err := helper.SendNotification(history.Registration_token,history.Perihal, history.Deskripsi)
 		if err != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, sendNotif, err.Error()))
 		}

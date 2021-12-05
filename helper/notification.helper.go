@@ -11,7 +11,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func SendNotification(registrationToken string, notificationMsg string) (string,error) {
+func SendNotification(registrationToken string, title, notificationMsg string) (string,error) {
 	//Initialize App
 	opt := option.WithCredentialsFile("firebase-key.json")
 	config := &firebase.Config{ProjectID: "smartville-fcm"}
@@ -31,11 +31,18 @@ func SendNotification(registrationToken string, notificationMsg string) (string,
 	//registrationToken := "YOUR_REGISTRATION_TOKEN"
 
 	// See documentation on defining a message payload.
+	// message := &messaging.Message{
+	// 	Data: map[string]string{
+	// 		"message": notificationMsg,
+	// 	},
+	// 	Token: registrationToken,
+	// }
+
 	message := &messaging.Message{
-		Data: map[string]string{
-			"message": notificationMsg,
+		Notification: &messaging.Notification{
+			Title: title,
+			Body: notificationMsg,
 		},
-		Token: registrationToken,
 	}
 
 	// Send a message to the device corresponding to the provided

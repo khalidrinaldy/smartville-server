@@ -70,7 +70,7 @@ func AddIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		postHistory, postHistoryErr := AddHistory(
 			db,
 			user,
-			"Pendataan Kelahiran",
+			"Surat Pengantar",
 			c.FormValue("registration_token"),
 		)
 		if postHistoryErr != nil {
