@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"log"
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
@@ -82,6 +83,7 @@ func AddIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		if resultAdd.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
 		}
+		log.Printf("token : %s", c.FormValue("registration_token"))
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add IntroductionMail Success", &introductionMail))
 	}
 }
