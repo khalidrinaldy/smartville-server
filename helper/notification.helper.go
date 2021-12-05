@@ -3,6 +3,7 @@ package helper
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"firebase.google.com/go/messaging"
 
@@ -45,5 +46,6 @@ func SendNotification(registrationToken string, notificationMsg string) (string,
 	}
 
 	// Response is a message ID string.
+	log.Printf("Successfully sent notification: %s", response)
 	return fmt.Sprintf("Successfully sent notification: %s", response), nil
 }
