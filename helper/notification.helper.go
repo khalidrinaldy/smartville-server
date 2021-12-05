@@ -43,6 +43,7 @@ func SendNotification(registrationToken string, title, notificationMsg string) (
 			Title: title,
 			Body: notificationMsg,
 		},
+		Token: registrationToken,
 	}
 
 	// Send a message to the device corresponding to the provided
