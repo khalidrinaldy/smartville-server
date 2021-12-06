@@ -38,10 +38,13 @@ func InitRoute(ech *echo.Echo) {
 
 	//Email verification
 	ech.POST("/user/email-verif", repository.SendEmail(database))
+	ech.POST("/admin/email-verif", repository.SendEmail(database))
 
 	//Change password
 	ech.PUT("/user/forgot-password", repository.ChangeForgotPassword(database))
 	ech.PUT("/user/change-password", repository.ChangePasswordProfile(database), middlewares.IsLoggedIn())
+	ech.PUT("/admin/forgot-password", repository.ForgotPaswordAdmin(database))
+	ech.PUT("/admin/change-password", repository.ChangePasswordAdmin(database), middlewares.IsLoggedIn())
 
 	//News Routes
 	ech.GET("/news", repository.GetAllNews(database))
