@@ -19,7 +19,7 @@ func GetAdminList(db *gorm.DB) echo.HandlerFunc {
 		result := db.Raw("SELECT id, nama, email, profile_pic from admins").Scan(&admins)
 
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Admin List Success", &admins))
@@ -38,7 +38,7 @@ func GetAdminByToken(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token Not Found", ""))
@@ -61,7 +61,7 @@ func RegisterAdmin(db *gorm.DB) echo.HandlerFunc {
 		//Check Email
 		adminEmail := db.Where("email = ?", admin.Email).Find(&admin)
 		if adminEmail.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", adminEmail.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", adminEmail.Error.Error()))
 		}
 		if adminEmail.RowsAffected > 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Sudah Dipakai", ""))
@@ -70,7 +70,7 @@ func RegisterAdmin(db *gorm.DB) echo.HandlerFunc {
 		//Hashing Password
 		hash, err := bcrypt.GenerateFromPassword([]byte(admin.Password), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err.Error()))
 		}
 		admin.Password = string(hash)
 
@@ -91,7 +91,7 @@ func RegisterAdmin(db *gorm.DB) echo.HandlerFunc {
 		//Post Register
 		regisResult := db.Create(&admin)
 		if regisResult.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", regisResult.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", regisResult.Error.Error()))
 		}
 		admin.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Register Success", &admin))
@@ -107,10 +107,10 @@ func LoginAdmin(db *gorm.DB) echo.HandlerFunc {
 		adminInput.Email = c.FormValue("email")
 		adminInput.Password = c.FormValue("password")
 
-		//Check User Exist
+		//Check admin Exist
 		resLogin := db.Where("email = ?", adminInput.Email).Find(&adminResult)
 		if resLogin.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resLogin.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resLogin.Error.Error()))
 		}
 		if resLogin.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Pernah Didaftarkan", ""))
@@ -154,7 +154,7 @@ func EditProfileAdmin(db *gorm.DB) echo.HandlerFunc {
 		//Hashing Password
 		hash, err := bcrypt.GenerateFromPassword([]byte(admin.Password), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err.Error()))
 		}
 		admin.Password = string(hash)
 
@@ -166,7 +166,7 @@ func EditProfileAdmin(db *gorm.DB) echo.HandlerFunc {
 			"profile_pic": admin.Profile_pic,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
 		}
 		if resultEdit.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token not found", ""))
@@ -181,8 +181,83 @@ func DeleteAdmin(db *gorm.DB) echo.HandlerFunc {
 		var admin entity.Admin
 		resultDelete := db.Delete(&admin, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Admin Data Success", &admin))
+	}
+}
+
+func ForgotPaswordAdmin(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var admin entity.Admin
+		email := c.FormValue("email")
+		password := c.FormValue("new_password")
+
+		//Check Email
+		adminEmail := db.Where("email = ?", email).Find(&admin)
+		if adminEmail.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", adminEmail.Error.Error()))
+		}
+		if adminEmail.RowsAffected == 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Terdaftar", ""))
+		}
+
+		//Hashing Password
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), 5)
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
+		}
+		password = string(hash)
+
+		//Change Password
+		setPassword := db.Exec("UPDATE admins SET password = ? where email = ?", password, email)
+		if setPassword.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error.Error()))
+		}
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
+	}
+}
+
+func ChangePasswordAdmin(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var admin entity.Admin
+
+		//Value body new password
+		oldPassword := c.FormValue("old_password")
+		newPassword := c.FormValue("new_password")
+
+		//Get token
+		headerToken := c.Request().Header.Get("Authorization")
+		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
+		headerToken = strings.ReplaceAll(headerToken, " ", "")
+
+		//Get admin first
+		result := db.First(&admin, "token = ?", headerToken)
+		if result.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+		}
+		if result.RowsAffected == 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token Not Found", ""))
+		}
+
+		//Compare password
+		checkPass := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(oldPassword))
+		if checkPass != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
+		}
+
+		//Hashing Password
+		hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), 5)
+		if err != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err.Error()))
+		}
+		newPassword = string(hash)
+
+		//Change Password
+		setPassword := db.Exec("UPDATE admins SET password = ? where token = ?", newPassword, headerToken)
+		if setPassword.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error.Error()))
+		}
+		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
 	}
 }

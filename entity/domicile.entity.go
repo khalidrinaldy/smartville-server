@@ -10,4 +10,6 @@ type DomicileRegistration struct {
 	Tgl_lahir       time.Time `gorm:"not null"`
 	Asal_domisili   string    `gorm:"not null"`
 	Tujuan_domisili string    `gorm:"not null"`
+	HistoryId       int       `gorm:"not null"`
+	History         History   `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }

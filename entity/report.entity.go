@@ -9,7 +9,9 @@ type Report struct {
 	Deskripsi     string `gorm:"not null"`
 	Jenis_laporan string `gorm:"not null"`
 	Tgl_laporan   time.Time
-	No_hp         string `gorm:"not null"`
-	Alamat        string `gorm:"not null"`
-	Foto_kejadian string `gorm:"not null"`
+	No_hp         string  `gorm:"not null"`
+	Alamat        string  `gorm:"not null"`
+	Foto_kejadian string  `gorm:"not null"`
+	HistoryId     int     `gorm:"not null"`
+	History       History `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }

@@ -18,7 +18,7 @@ func GetAllFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		result := db.Find(&financialHelps)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch FinancialHelp Data Success", &financialHelps))
 	}
@@ -31,7 +31,7 @@ func GetFinancialHelpById(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		result := db.First(&financialHelp, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "FinancialHelp Id Not Found", result.RowsAffected))
@@ -53,7 +53,7 @@ func AddFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -68,10 +68,22 @@ func AddFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		financialHelp.Dana_terealisasi,_ = strconv.Atoi(c.FormValue("dana_terealisasi"))
 		financialHelp.Sisa_dana_bantuan,_ = strconv.Atoi(c.FormValue("sisa_dana_bantuan"))
 
+		//Post History Financial Help
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Permohonan Bantuan Dana",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+		}
+
 		//POST Request
+		financialHelp.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&financialHelp)
 		if resultAdd.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add FinancialHelp Success", &financialHelp))
 	}
@@ -90,7 +102,7 @@ func EditFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -117,7 +129,7 @@ func EditFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 			"sisa_dana_bantuan":    financialHelp.Sisa_dana_bantuan,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit FinancialHelp Data Success", &financialHelp))
 	}
@@ -136,7 +148,7 @@ func DeleteFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -148,7 +160,7 @@ func DeleteFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		//DELETE
 		resultDelete := db.Delete(&financialHelp, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete FinancialHelp Data Success", &financialHelp))
 	}

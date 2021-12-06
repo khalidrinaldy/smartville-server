@@ -15,7 +15,7 @@ func GetAllNews(db *gorm.DB) echo.HandlerFunc {
 		var news []entity.News
 		result := db.Raw("select * from news order by tanggal_terbit limit 5").Scan(&news)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", result.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch News Success", &news))
 	}
@@ -26,7 +26,7 @@ func GetNewsById(db *gorm.DB) echo.HandlerFunc {
 		var news entity.News
 		result := db.First(&news, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", result.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch News By Id Success", &news))
 	}
@@ -49,7 +49,7 @@ func AddNews(db *gorm.DB) echo.HandlerFunc {
 		//Post news
 		resultAdd := db.Create(&news)
 		if resultAdd.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultAdd.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultAdd.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add News Success", &news))
 	}
@@ -79,7 +79,7 @@ func EditNews(db *gorm.DB) echo.HandlerFunc {
 				"foto_berita": news.Foto_berita,
 			})
 			if resultEdit.Error != nil {
-				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultEdit.Error))
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultEdit.Error.Error()))
 			}
 			return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit News Success", &news))
 		}
@@ -92,7 +92,7 @@ func EditNews(db *gorm.DB) echo.HandlerFunc {
 			"tanggal_terbit": news.Tanggal_terbit,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultEdit.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultEdit.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit News Success", &news))
 	}
@@ -103,7 +103,7 @@ func DeleteNews(db *gorm.DB) echo.HandlerFunc {
 		var news entity.News
 		resultDelete := db.Delete(&news, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultDelete.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Querying SQL", resultDelete.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete News Success", &news))
 	}

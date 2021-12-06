@@ -20,7 +20,7 @@ func GetUserList(db *gorm.DB) echo.HandlerFunc {
 		var users []entity.UserList
 		result := db.Raw("SELECT nik, nama from users").Scan(&users)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch User List Success", &users))
 	}
@@ -32,7 +32,7 @@ func GetUserById(db *gorm.DB) echo.HandlerFunc {
 		result := db.First(&user, c.Param("id"))
 
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", result.Error.Error()))
 		}
 
 		//Check token is valid for user id
@@ -60,7 +60,7 @@ func GetUserByToken(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token Not Found", ""))
@@ -90,7 +90,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		//Check NIK
 		userNik := db.Where("nik = ?", user.Nik).Find(&user)
 		if userNik.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userNik.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userNik.Error.Error()))
 		}
 		if userNik.RowsAffected > 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "NIK Sudah Didaftarkan", ""))
@@ -99,7 +99,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		//Check Email
 		userEmail := db.Where("email = ?", user.Email).Find(&user)
 		if userEmail.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error.Error()))
 		}
 		if userEmail.RowsAffected > 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Sudah Dipakai", ""))
@@ -108,7 +108,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		//Hashing Password
 		hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 		}
 		user.Password = string(hash)
 
@@ -128,7 +128,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 			//Post Register
 			regisResult := db.Create(&user)
 			if regisResult.Error != nil {
-				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", regisResult.Error))
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", regisResult.Error.Error()))
 			}
 			user.Password = "hidden"
 			return c.JSON(http.StatusOK, helper.ResultResponse(false, "Register Success", &user))
@@ -137,7 +137,7 @@ func Register(db *gorm.DB) echo.HandlerFunc {
 		//Post Register Without Photo
 		regisResult := db.Create(&user)
 		if regisResult.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", regisResult.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", regisResult.Error.Error()))
 		}
 		user.Password = "hidden"
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Register Success", &user))
@@ -154,7 +154,7 @@ func Login(db *gorm.DB) echo.HandlerFunc {
 		//Login
 		resLogin := db.Where("email = ?", userInput.Email).Find(&userResult)
 		if resLogin.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", resLogin.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", resLogin.Error.Error()))
 		}
 
 		//Check user exist
@@ -183,7 +183,7 @@ func ChangeForgotPassword(db *gorm.DB) echo.HandlerFunc {
 		//Check Email
 		userEmail := db.Where("email = ?", email).Find(&user)
 		if userEmail.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error.Error()))
 		}
 		if userEmail.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Terdaftar", ""))
@@ -192,14 +192,14 @@ func ChangeForgotPassword(db *gorm.DB) echo.HandlerFunc {
 		//Hashing Password
 		hash, err := bcrypt.GenerateFromPassword([]byte(password), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", err.Error()))
 		}
 		password = string(hash)
 
 		//Change Password
 		setPassword := db.Exec("UPDATE users SET password = ? where email = ?", password, email)
 		if setPassword.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
 	}
@@ -239,7 +239,7 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 				"profile_pic": user.Profile_pic,
 			})
 			if resultEdit.Error != nil {
-				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
 			}
 			if resultEdit.RowsAffected == 0 {
 				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token not found", ""))
@@ -256,7 +256,7 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 			"password": user.Password,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
 		}
 		if resultEdit.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token not found", ""))
@@ -265,9 +265,42 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 	}
 }
 
-func CheckPassword(db *gorm.DB) echo.HandlerFunc {
+// func CheckPassword(db *gorm.DB) echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+// 		var user entity.User
+
+// 		//Get token
+// 		headerToken := c.Request().Header.Get("Authorization")
+// 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
+// 		headerToken = strings.ReplaceAll(headerToken, " ", "")
+
+// 		//Get user first
+// 		result := db.First(&user, "token = ?", headerToken)
+// 		if result.Error != nil {
+// 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+// 		}
+// 		if result.RowsAffected == 0 {
+// 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token Not Found", ""))
+// 		}
+
+// 		//Compare password
+// 		checkPass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.FormValue("password")))
+// 		if checkPass != nil {
+// 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
+// 		}
+// 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password benar", map[string]interface{}{
+// 			"check": true,
+// 		}))
+// 	}
+// }
+
+func ChangePasswordProfile(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user entity.User
+
+		//Value body new password
+		oldPassword := c.FormValue("old_password")
+		newPassword := c.FormValue("new_password")
 
 		//Get token
 		headerToken := c.Request().Header.Get("Authorization")
@@ -277,44 +310,29 @@ func CheckPassword(db *gorm.DB) echo.HandlerFunc {
 		//Get user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Token Not Found", ""))
 		}
 
 		//Compare password
-		checkPass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(c.FormValue("password")))
+		checkPass := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword))
 		if checkPass != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Password Salah", ""))
 		}
-		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password benar", map[string]interface{}{
-			"check": true,
-		}))
-	}
-}
-
-func ChangePasswordProfile(db *gorm.DB) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		//Value body
-		password := c.FormValue("new_password")
-
-		//Get token
-		headerToken := c.Request().Header.Get("Authorization")
-		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
-		headerToken = strings.ReplaceAll(headerToken, " ", "")
 
 		//Hashing Password
-		hash, err := bcrypt.GenerateFromPassword([]byte(password), 5)
+		hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), 5)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Hashing Password", err.Error()))
 		}
-		password = string(hash)
+		newPassword = string(hash)
 
 		//Change Password
-		setPassword := db.Exec("UPDATE users SET password = ? where token = ?", password, headerToken)
+		setPassword := db.Exec("UPDATE users SET password = ? where token = ?", newPassword, headerToken)
 		if setPassword.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured[setPassword]", setPassword.Error.Error()))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Password berhasil diubah", ""))
 	}
