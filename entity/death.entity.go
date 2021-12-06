@@ -11,4 +11,6 @@ type Death struct {
 	Usia          int       `gorm:"not null"`
 	Tgl_wafat     time.Time `gorm:"not null"`
 	Alamat        string    `gorm:"not null"`
+	HistoryId     int       `gorm:"not null"`
+	History       History   `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }

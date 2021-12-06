@@ -66,7 +66,7 @@ func AddIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		introductionMail.Alamat_pemohon = c.FormValue("alamat_pemohon")
 		introductionMail.Jenis_surat = c.FormValue("jenis_surat")
 
-		//Post History Birth
+		//Post History Introduction Mail
 		postHistory, postHistoryErr := AddHistory(
 			db,
 			user,

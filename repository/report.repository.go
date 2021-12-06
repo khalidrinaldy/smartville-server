@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
+	"strconv"
 	"strings"
 	"time"
 
@@ -80,7 +81,19 @@ func AddReport(db *gorm.DB) echo.HandlerFunc {
 			report.Foto_kejadian = imageURL
 		}
 
+		//Post History Report
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Pelaporan Kejadian",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+		}
+
 		//POST Request
+		report.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&report)
 		if resultAdd.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))

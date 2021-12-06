@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"smartville-server/entity"
 	"smartville-server/helper"
+	"strconv"
 	"strings"
 	"time"
 
@@ -63,7 +64,19 @@ func AddDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 		domicile.Asal_domisili = c.FormValue("asal_domisili")
 		domicile.Tujuan_domisili = c.FormValue("tujuan_domisili")
 
+		//Post History Domicile
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Pendataan Pindah Domisili",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+		}
+
 		//Post Domicile registration
+		domicile.HistoryId,_ = strconv.Atoi(postHistory)
 		resultDomicile := db.Create(&domicile)
 		if resultDomicile.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDomicile.Error.Error()))

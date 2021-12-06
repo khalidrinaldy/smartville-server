@@ -9,5 +9,5 @@ type IntroductionMail struct {
 	No_hp          string  `gorm:"not null"`
 	Jenis_surat    string  `gorm:"not null"`
 	HistoryId      int     `gorm:"not null"`
-	History        History `gorm:"foreignKey:HistoryId;references:Id" json:",omitempty"`
+	History        History `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }

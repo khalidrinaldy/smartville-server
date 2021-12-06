@@ -68,7 +68,19 @@ func AddFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		financialHelp.Dana_terealisasi,_ = strconv.Atoi(c.FormValue("dana_terealisasi"))
 		financialHelp.Sisa_dana_bantuan,_ = strconv.Atoi(c.FormValue("sisa_dana_bantuan"))
 
+		//Post History Financial Help
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Permohonan Bantuan Dana",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+		}
+
 		//POST Request
+		financialHelp.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&financialHelp)
 		if resultAdd.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))

@@ -69,7 +69,19 @@ func AddDeathData(db *gorm.DB) echo.HandlerFunc {
 		death.Tgl_wafat,_ = time.Parse("20060102", c.FormValue("tgl_wafat"))
 		death.Alamat = c.FormValue("alamat")
 
+		//Post History Death
+		postHistory, postHistoryErr := AddHistory(
+			db,
+			user,
+			"Pendataan Kematian",
+			c.FormValue("registration_token"),
+		)
+		if postHistoryErr != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+		}
+
 		//Post Death registration
+		death.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&death)
 		if resultAdd.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
