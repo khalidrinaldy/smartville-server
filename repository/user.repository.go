@@ -235,7 +235,6 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 				"alamat":   user.Alamat,
 				"no_hp":    user.No_hp,
 				"email":    user.Email,
-				"password": user.Password,
 				"profile_pic": user.Profile_pic,
 			})
 			if resultEdit.Error != nil {
