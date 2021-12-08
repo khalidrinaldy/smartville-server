@@ -226,7 +226,9 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error.Error()))
 		}
 		if userEmail.RowsAffected > 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email sudah digunakan", ""))
+			if userCheck.Token != headerToken {
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email sudah digunakan", ""))
+			}
 		}
 
 		//Check upload photo
