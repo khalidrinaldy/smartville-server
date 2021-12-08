@@ -131,6 +131,7 @@ func LoginAdmin(db *gorm.DB) echo.HandlerFunc {
 func EditProfileAdmin(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var admin entity.Admin
+		var adminCheck entity.Admin
 		admin.Nama = c.FormValue("nama")
 		admin.Email = c.FormValue("email")
 		admin.Password = c.FormValue("password")
@@ -139,6 +140,15 @@ func EditProfileAdmin(db *gorm.DB) echo.HandlerFunc {
 		headerToken := c.Request().Header.Get("Authorization")
 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
 		headerToken = strings.ReplaceAll(headerToken, " ", "")
+
+		//Check Email
+		adminEmail := db.Where("email = ?", admin.Email).Find(&adminCheck)
+		if adminEmail.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", adminEmail.Error.Error()))
+		}
+		if adminEmail.RowsAffected > 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email sudah digunakan", ""))
+		}
 
 		//Check upload photo
 		_, photoErr := c.FormFile("profile_pic")
@@ -162,7 +172,6 @@ func EditProfileAdmin(db *gorm.DB) echo.HandlerFunc {
 		resultEdit := db.Model(&admin).Where("token = ?", headerToken).Updates(map[string]interface{}{
 			"nama": admin.Nama,
 			"email": admin.Email,
-			"password": admin.Password,
 			"profile_pic": admin.Profile_pic,
 		})
 		if resultEdit.Error != nil {

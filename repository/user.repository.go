@@ -208,6 +208,7 @@ func ChangeForgotPassword(db *gorm.DB) echo.HandlerFunc {
 func EditProfile(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var user entity.User
+		var userCheck entity.User
 		user.Nama = c.FormValue("nama")
 		user.Alamat = c.FormValue("alamat")
 		user.No_hp = c.FormValue("no_hp")
@@ -218,6 +219,15 @@ func EditProfile(db *gorm.DB) echo.HandlerFunc {
 		headerToken := c.Request().Header.Get("Authorization")
 		headerToken = strings.ReplaceAll(headerToken, "Bearer", "")
 		headerToken = strings.ReplaceAll(headerToken, " ", "")
+
+		//Check Email
+		userEmail := db.Where("email = ?", user.Email).Find(&userCheck)
+		if userEmail.Error != nil {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error.Error()))
+		}
+		if userEmail.RowsAffected > 0 {
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email sudah digunakan", ""))
+		}
 
 		//Check upload photo
 		_, photoErr := c.FormFile("profile_pic")
