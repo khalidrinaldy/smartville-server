@@ -25,7 +25,7 @@ func GetAllHistory(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -34,7 +34,7 @@ func GetAllHistory(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		resultHistory := db.Order("updated_at desc").Where("user_nik = ?", user.Nik).Find(&history)
 		if resultHistory.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultHistory.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultHistory.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch History Data Success", &history))
 	}
@@ -104,7 +104,7 @@ func EditStatusHistory(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -119,7 +119,7 @@ func EditStatusHistory(db *gorm.DB) echo.HandlerFunc {
 		//Get history by id
 		resHistory := db.First(&history, history.Id)
 		if resHistory.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resHistory.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resHistory.Error.Error(), ""))
 		}
 		if resHistory.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Invalid History Id", ""))
@@ -139,13 +139,13 @@ func EditStatusHistory(db *gorm.DB) echo.HandlerFunc {
 			"status":    history.Status,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultEdit.Error.Error(), ""))
 		}
 
 		//Send Notification
-		sendNotif, err := helper.SendNotification(history.Registration_token,history.Perihal, history.Deskripsi)
+		_, err := helper.SendNotification(history.Registration_token,history.Perihal, history.Deskripsi)
 		if err != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, sendNotif, err.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, err.Error(), ""))
 		}
 
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Status History Success", map[string]interface{}{

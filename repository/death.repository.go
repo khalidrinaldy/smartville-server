@@ -19,7 +19,7 @@ func GetAllDeathData(db *gorm.DB) echo.HandlerFunc{
 		//Query
 		result := db.Find(&deaths)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Death Data Success", &deaths))
 	}
@@ -32,10 +32,10 @@ func GetDeathDataById(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		result := db.First(&death, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Death Registration Id Not Found", result.RowsAffected))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Death Registration Id Not Found", ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Death Data Success", &death))
 	}
@@ -54,7 +54,7 @@ func AddDeathData(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -77,14 +77,14 @@ func AddDeathData(db *gorm.DB) echo.HandlerFunc {
 			c.FormValue("registration_token"),
 		)
 		if postHistoryErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistoryErr.Error(), ""))
 		}
 
 		//Post Death registration
 		death.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&death)
 		if resultAdd.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultAdd.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Death Data Success", &death))
 	}
@@ -103,7 +103,7 @@ func EditDeathData(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -130,7 +130,7 @@ func EditDeathData(db *gorm.DB) echo.HandlerFunc {
 			"alamat": death.Alamat,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultEdit.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Death Data Success", &death))
 	}
@@ -149,7 +149,7 @@ func DeleteDeathData(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -161,7 +161,7 @@ func DeleteDeathData(db *gorm.DB) echo.HandlerFunc {
 		//DELETE
 		resultDelete := db.Delete(&death, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultDelete.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Death Data Success", &death))
 	}
