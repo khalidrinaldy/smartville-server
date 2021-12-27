@@ -13,7 +13,7 @@ import (
 func GetAllNews(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var news []entity.News
-		result := db.Raw("select * from news order by tanggal_terbit limit 5").Scan(&news)
+		result := db.Raw("select * from news order by tanggal_terbit desc limit 5").Scan(&news)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
