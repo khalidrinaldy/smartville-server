@@ -19,5 +19,6 @@ type IntroductionMailQuery struct {
 	Alamat_pemohon string
 	No_hp          string
 	Jenis_surat    string
+	HistoryId      int
 	Status         string
 }

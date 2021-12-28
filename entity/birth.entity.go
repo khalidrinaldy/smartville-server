@@ -24,5 +24,6 @@ type BirthQuery struct {
 	Anak_ke           int
 	Tanggal_kelahiran time.Time
 	Alamat_kelahiran  string
+	HistoryId         int
 	Status            string
 }

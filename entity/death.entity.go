@@ -23,5 +23,6 @@ type DeathQuery struct {
 	Usia          int
 	Tgl_wafat     time.Time
 	Alamat        string
+	HistoryId     int
 	Status        string
 }

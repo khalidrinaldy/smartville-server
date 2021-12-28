@@ -21,5 +21,6 @@ type DomicileQuery struct {
 	Tgl_lahir       time.Time
 	Asal_domisili   string
 	Tujuan_domisili string
+	HistoryId       int
 	Status          string
 }
