@@ -21,5 +21,6 @@ type FinancialQuery struct {
 	Alokasi_dana      int
 	Dana_terealisasi  int
 	Sisa_dana_bantuan int
+	HistoryId         int
 	Status            string
 }

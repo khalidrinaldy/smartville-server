@@ -25,5 +25,6 @@ type ReportQuery struct {
 	No_hp         string
 	Alamat        string
 	Foto_kejadian string
+	HistoryId     int
 	Status        string
 }
