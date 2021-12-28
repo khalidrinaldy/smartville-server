@@ -17,7 +17,7 @@ func GetAllIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		var introductionMail []entity.IntroductionMailQuery
 
 		//Query
-		result := db.Raw(`select im.id , im.nik_pemohon , im.nama_pemohon , im.alamat_pemohon , im.no_hp , im.jenis_surat,h.status 
+		result := db.Raw(`select im.id , im.nik_pemohon , im.nama_pemohon , im.alamat_pemohon , im.no_hp , im.jenis_surat, im.history_id,h.status 
 		from introduction_mails im 
 		left join histories h 
 		on im.history_id = h.id
