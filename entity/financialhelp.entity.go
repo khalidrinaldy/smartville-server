@@ -12,3 +12,14 @@ type FinancialHelp struct {
 	HistoryId         int     `gorm:"not null"`
 	History           History `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }
+
+type FinancialQuery struct {
+	Id                int
+	Nama_bantuan      string
+	Jenis_bantuan     string
+	Jumlah_dana       int
+	Alokasi_dana      int
+	Dana_terealisasi  int
+	Sisa_dana_bantuan int
+	Status            string
+}

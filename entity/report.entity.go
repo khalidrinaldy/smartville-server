@@ -15,3 +15,15 @@ type Report struct {
 	HistoryId     int     `gorm:"not null"`
 	History       History `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }
+
+type ReportQuery struct {
+	Id            int
+	Nama_pelapor  string
+	Deskripsi     string
+	Jenis_laporan string
+	Tgl_laporan   time.Time
+	No_hp         string
+	Alamat        string
+	Foto_kejadian string
+	Status        string
+}

@@ -15,10 +15,14 @@ import (
 
 func GetAllReports(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var reports []entity.Report
+		var reports []entity.ReportQuery
 		
 		//Query
-		result := db.Find(&reports)
+		result := db.Raw(`select  r.id , r.nama_pelapor , r.deskripsi , r.jenis_laporan , r.tgl_laporan , r.no_hp , r.alamat ,r.foto_kejadian , h.status 
+		from reports r 
+		left join histories h 
+		on r.history_id = h.id
+		order by r.id desc`).Scan(&reports)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}

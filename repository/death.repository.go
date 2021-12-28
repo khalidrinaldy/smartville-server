@@ -14,10 +14,14 @@ import (
 
 func GetAllDeathData(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
-		var deaths []entity.Death
+		var deaths []entity.DeathQuery
 
 		//Query
-		result := db.Find(&deaths)
+		result := db.Raw(`select d.id, d.nik , d.nama , d.jenis_kelamin , d.usia , d.tgl_wafat , d.alamat , h.status 
+		from deaths d 
+		left join histories h 
+		on d.history_id = h.id
+		order by d.id desc`).Scan(&deaths)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}

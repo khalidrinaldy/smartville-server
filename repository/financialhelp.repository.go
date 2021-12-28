@@ -13,10 +13,14 @@ import (
 
 func GetAllFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var financialHelps []entity.FinancialHelp
+		var financialHelps []entity.FinancialQuery
 
 		//Query
-		result := db.Find(&financialHelps)
+		result := db.Raw(`select fh.id , fh.nama_bantuan , fh.jenis_bantuan , fh.jumlah_dana , fh.alokasi_dana , fh.dana_terealisasi , fh.sisa_dana_bantuan , h.status 
+		from financial_helps fh 
+		left join histories h 
+		on fh.history_id = h.id
+		order by fh.id desc`).Scan(&financialHelps)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}

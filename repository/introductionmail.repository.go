@@ -14,10 +14,14 @@ import (
 
 func GetAllIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var introductionMail []entity.IntroductionMail
+		var introductionMail []entity.IntroductionMailQuery
 
 		//Query
-		result := db.Find(&introductionMail)
+		result := db.Raw(`select im.id , im.nik_pemohon , im.nama_pemohon , im.alamat_pemohon , im.no_hp , im.jenis_surat,h.status 
+		from introduction_mails im 
+		left join histories h 
+		on im.history_id = h.id
+		order by im.id desc`).Scan(&introductionMail)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}

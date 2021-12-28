@@ -15,8 +15,12 @@ import (
 
 func GetAllBirthRegistration(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
-		var births []entity.BirthRegistration
-		result := db.Find(&births)
+		var births []entity.BirthQuery
+		result := db.Raw(`select br.id, br.nama_bayi, br.nama_ibu, br.nama_ayah, br.anak_ke, br.tanggal_kelahiran, br.alamat_kelahiran, h.status 
+		from birth_registrations br 
+		left join histories h 
+		on br.history_id = h.id
+		order by br.id desc`).Scan(&births)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}

@@ -14,8 +14,12 @@ import (
 
 func GetAllDomicileRegistration(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
-		var domiciles []entity.DomicileRegistration
-		result := db.Find(&domiciles)
+		var domiciles []entity.DomicileQuery
+		result := db.Raw(`select dr.id, dr.nik_pemohon , dr.nama_pemohon , dr.tgl_lahir, dr.asal_domisili , dr.tujuan_domisili, h.status 
+		from domicile_registrations dr 
+		left join histories h 
+		on dr.history_id = h.id
+		order by dr.id desc`).Scan(&domiciles)
 		if result.Error != nil {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
