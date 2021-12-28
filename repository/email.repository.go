@@ -30,7 +30,7 @@ func SendEmail(db *gorm.DB) echo.HandlerFunc{
 		var user entity.User
 		userEmail := db.Where("email = ?", to).Find(&user)
 		if userEmail.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured", userEmail.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, userEmail.Error.Error(), ""))
 		}
 		if userEmail.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Email Belum Terdaftar", ""))
@@ -39,7 +39,7 @@ func SendEmail(db *gorm.DB) echo.HandlerFunc{
 		//Send Email
 		sendErr := helper.SendEmail(to, subject, "Kode OTP kamu : " + messageOTP)
 		if sendErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error While Sending Email", sendErr.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, sendErr.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Email Has Been Sent!", map[string]string{
 			"otp" : messageOTP,

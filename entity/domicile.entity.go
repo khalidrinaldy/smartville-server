@@ -13,3 +13,13 @@ type DomicileRegistration struct {
 	HistoryId       int       `gorm:"not null"`
 	History         History   `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }
+
+type DomicileQuery struct {
+	Id              int
+	Nik_pemohon     string
+	Nama_pemohon    string
+	Tgl_lahir       time.Time
+	Asal_domisili   string
+	Tujuan_domisili string
+	Status          string
+}

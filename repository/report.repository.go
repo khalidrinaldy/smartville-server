@@ -15,12 +15,16 @@ import (
 
 func GetAllReports(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var reports []entity.Report
+		var reports []entity.ReportQuery
 		
 		//Query
-		result := db.Find(&reports)
+		result := db.Raw(`select  r.id , r.nama_pelapor , r.deskripsi , r.jenis_laporan , r.tgl_laporan , r.no_hp , r.alamat ,r.foto_kejadian , h.status 
+		from reports r 
+		left join histories h 
+		on r.history_id = h.id
+		order by r.id desc`).Scan(&reports)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Reports Data Success", &reports))
 	}
@@ -33,10 +37,10 @@ func GetReportById(db *gorm.DB) echo.HandlerFunc {
 		//Query
 		result := db.First(&report, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Report Id Not Found", result.RowsAffected))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Report Id Not Found", ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Report Data Success", &report))
 	}
@@ -55,7 +59,7 @@ func AddReport(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -76,7 +80,7 @@ func AddReport(db *gorm.DB) echo.HandlerFunc {
 			//Upload profile picture
 			imageURL, err := helper.UploadImage(c, "", "foto_kejadian", fmt.Sprintf("laporan/%v/%v", report.Tgl_laporan.Year(), report.Tgl_laporan.Month()), "profile")
 			if err != nil {
-				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Upload Image", err.Error()))
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, err.Error(), ""))
 			}
 			report.Foto_kejadian = imageURL
 		}
@@ -89,14 +93,14 @@ func AddReport(db *gorm.DB) echo.HandlerFunc {
 			c.FormValue("registration_token"),
 		)
 		if postHistoryErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistoryErr.Error(), ""))
 		}
 
 		//POST Request
 		report.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&report)
 		if resultAdd.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultAdd.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Report Success", &report))
 	}
@@ -115,7 +119,7 @@ func EditReport(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -138,7 +142,7 @@ func EditReport(db *gorm.DB) echo.HandlerFunc {
 			//Upload profile picture
 			imageURL, err := helper.UploadImage(c, "", "foto_kejadian", fmt.Sprintf("laporan/%v/%v", report.Tgl_laporan.Year(), report.Tgl_laporan.Month()), "profile")
 			if err != nil {
-				return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Upload Image", err.Error()))
+				return c.JSON(http.StatusOK, helper.ResultResponse(true, err.Error(), ""))
 			}
 			report.Foto_kejadian = imageURL
 		}
@@ -153,7 +157,7 @@ func EditReport(db *gorm.DB) echo.HandlerFunc {
 			"alamat": report.Alamat,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultEdit.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Report Data Success", &report))
 	}
@@ -172,7 +176,7 @@ func DeleteReport(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -184,7 +188,7 @@ func DeleteReport(db *gorm.DB) echo.HandlerFunc {
 		//DELETE
 		resultDelete := db.Delete(&report, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultDelete.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Report Data Success", &report))
 	}

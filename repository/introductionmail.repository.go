@@ -14,12 +14,16 @@ import (
 
 func GetAllIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var introductionMail []entity.IntroductionMail
+		var introductionMail []entity.IntroductionMailQuery
 
 		//Query
-		result := db.Find(&introductionMail)
+		result := db.Raw(`select im.id , im.nik_pemohon , im.nama_pemohon , im.alamat_pemohon , im.no_hp , im.jenis_surat,h.status 
+		from introduction_mails im 
+		left join histories h 
+		on im.history_id = h.id
+		order by im.id desc`).Scan(&introductionMail)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch IntroductionMail Data Success", &introductionMail))
 	}
@@ -30,10 +34,10 @@ func GetIntroductionMailById(db *gorm.DB) echo.HandlerFunc {
 		var introductionMail entity.IntroductionMail
 		result := db.First(&introductionMail, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "IntroductionMail Id Not Found", result.RowsAffected))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "IntroductionMail Id Not Found", ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch IntroductionMail Data Success", &introductionMail))
 	}
@@ -52,7 +56,7 @@ func AddIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -74,14 +78,14 @@ func AddIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 			c.FormValue("registration_token"),
 		)
 		if postHistoryErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistoryErr.Error(), ""))
 		}
 
 		//POST Request
 		introductionMail.HistoryId,_ = strconv.Atoi(postHistory)
 		resultAdd := db.Create(&introductionMail)
 		if resultAdd.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultAdd.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultAdd.Error.Error(), ""))
 		}
 		log.Printf("token : %s", c.FormValue("registration_token"))
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add IntroductionMail Success", &introductionMail))
@@ -101,7 +105,7 @@ func EditIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -126,7 +130,7 @@ func EditIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 			"jenis_surat":    introductionMail.Jenis_surat,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultEdit.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit IntroductionMail Data Success", &introductionMail))
 	}
@@ -145,7 +149,7 @@ func DeleteIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -157,7 +161,7 @@ func DeleteIntroductionMail(db *gorm.DB) echo.HandlerFunc {
 		//DELETE
 		resultDelete := db.Delete(&introductionMail, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultDelete.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete IntroductionMail Data Success", &introductionMail))
 	}

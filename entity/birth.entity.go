@@ -15,3 +15,14 @@ type BirthRegistration struct {
 	HistoryId         int     `gorm:"not null"`
 	History           History `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }
+
+type BirthQuery struct {
+	Id                int
+	Nama_bayi         string
+	Nama_ayah         string
+	Nama_ibu          string
+	Anak_ke           int
+	Tanggal_kelahiran time.Time
+	Alamat_kelahiran  string
+	Status            string
+}

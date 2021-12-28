@@ -14,10 +14,14 @@ import (
 
 func GetAllDomicileRegistration(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
-		var domiciles []entity.DomicileRegistration
-		result := db.Find(&domiciles)
+		var domiciles []entity.DomicileQuery
+		result := db.Raw(`select dr.id, dr.nik_pemohon , dr.nama_pemohon , dr.tgl_lahir, dr.asal_domisili , dr.tujuan_domisili, h.status 
+		from domicile_registrations dr 
+		left join histories h 
+		on dr.history_id = h.id
+		order by dr.id desc`).Scan(&domiciles)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Domicile Data Success", &domiciles))
 	}
@@ -28,10 +32,10 @@ func GetDomicileRegistrationById(db *gorm.DB) echo.HandlerFunc {
 		var domicile entity.DomicileRegistration
 		result := db.First(&domicile, c.Param("id"))
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Domicile Registration Id Not Found", result.RowsAffected))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Domicile Registration Id Not Found", ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Fetch Domicile Data Success", &domicile))
 	}
@@ -50,7 +54,7 @@ func AddDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 		//Query user first
 		result := db.First(&user, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "User Token Not Found", ""))
@@ -72,14 +76,14 @@ func AddDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 			c.FormValue("registration_token"),
 		)
 		if postHistoryErr != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistory, postHistoryErr.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, postHistoryErr.Error(), ""))
 		}
 
 		//Post Domicile registration
 		domicile.HistoryId,_ = strconv.Atoi(postHistory)
 		resultDomicile := db.Create(&domicile)
 		if resultDomicile.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDomicile.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultDomicile.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Add Domicile Registration Success", &domicile))
 	}
@@ -98,7 +102,7 @@ func EditDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -123,7 +127,7 @@ func EditDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 			"tujuan_domisili": domicile.Tujuan_domisili,
 		})
 		if resultEdit.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultEdit.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultEdit.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Edit Domicile Registration Data Success", &domicile))
 	}
@@ -142,7 +146,7 @@ func DeleteDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 		//Check Is Admin
 		result := db.First(&admin, "token = ?", headerToken)
 		if result.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", result.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, result.Error.Error(), ""))
 		}
 		if result.RowsAffected == 0 {
 			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Admin Token Not Found", ""))
@@ -154,7 +158,7 @@ func DeleteDomicileRegistration(db *gorm.DB) echo.HandlerFunc {
 		//DELETE
 		resultDelete := db.Delete(&domicile, c.Param("id"))
 		if resultDelete.Error != nil {
-			return c.JSON(http.StatusOK, helper.ResultResponse(true, "Error Occured While Querying SQL", resultDelete.Error.Error()))
+			return c.JSON(http.StatusOK, helper.ResultResponse(true, resultDelete.Error.Error(), ""))
 		}
 		return c.JSON(http.StatusOK, helper.ResultResponse(false, "Delete Domicile Registration Data Success", &domicile))
 	}

@@ -14,3 +14,14 @@ type Death struct {
 	HistoryId     int       `gorm:"not null"`
 	History       History   `gorm:"foreignKey:HistoryId;references:Id" json:"omitempty"`
 }
+
+type DeathQuery struct {
+	Id            int
+	Nik           string
+	Nama          string
+	Jenis_kelamin bool
+	Usia          int
+	Tgl_wafat     time.Time
+	Alamat        string
+	Status        string
+}
