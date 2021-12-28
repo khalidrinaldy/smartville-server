@@ -18,7 +18,7 @@ func GetAllReports(db *gorm.DB) echo.HandlerFunc {
 		var reports []entity.ReportQuery
 		
 		//Query
-		result := db.Raw(`select  r.id , r.nama_pelapor , r.deskripsi , r.jenis_laporan , r.tgl_laporan , r.no_hp , r.alamat ,r.foto_kejadian , h.status 
+		result := db.Raw(`select  r.id , r.nama_pelapor , r.deskripsi , r.jenis_laporan , r.tgl_laporan , r.no_hp , r.alamat ,r.foto_kejadian, r.history_id , h.status 
 		from reports r 
 		left join histories h 
 		on r.history_id = h.id

@@ -16,7 +16,7 @@ func GetAllFinancialHelp(db *gorm.DB) echo.HandlerFunc {
 		var financialHelps []entity.FinancialQuery
 
 		//Query
-		result := db.Raw(`select fh.id , fh.nama_bantuan , fh.jenis_bantuan , fh.jumlah_dana , fh.alokasi_dana , fh.dana_terealisasi , fh.sisa_dana_bantuan , h.status 
+		result := db.Raw(`select fh.id , fh.nama_bantuan , fh.jenis_bantuan , fh.jumlah_dana , fh.alokasi_dana , fh.dana_terealisasi , fh.sisa_dana_bantuan ,fh.history_id, h.status 
 		from financial_helps fh 
 		left join histories h 
 		on fh.history_id = h.id

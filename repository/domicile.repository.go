@@ -15,7 +15,7 @@ import (
 func GetAllDomicileRegistration(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
 		var domiciles []entity.DomicileQuery
-		result := db.Raw(`select dr.id, dr.nik_pemohon , dr.nama_pemohon , dr.tgl_lahir, dr.asal_domisili , dr.tujuan_domisili, h.status 
+		result := db.Raw(`select dr.id, dr.nik_pemohon , dr.nama_pemohon , dr.tgl_lahir, dr.asal_domisili , dr.tujuan_domisili, dr.history_id, h.status 
 		from domicile_registrations dr 
 		left join histories h 
 		on dr.history_id = h.id

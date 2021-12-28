@@ -17,7 +17,7 @@ func GetAllDeathData(db *gorm.DB) echo.HandlerFunc{
 		var deaths []entity.DeathQuery
 
 		//Query
-		result := db.Raw(`select d.id, d.nik , d.nama , d.jenis_kelamin , d.usia , d.tgl_wafat , d.alamat , h.status 
+		result := db.Raw(`select d.id, d.nik , d.nama , d.jenis_kelamin , d.usia , d.tgl_wafat , d.alamat ,d.history_id, h.status 
 		from deaths d 
 		left join histories h 
 		on d.history_id = h.id

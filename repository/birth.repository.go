@@ -16,7 +16,7 @@ import (
 func GetAllBirthRegistration(db *gorm.DB) echo.HandlerFunc{
 	return func(c echo.Context) error {
 		var births []entity.BirthQuery
-		result := db.Raw(`select br.id, br.nama_bayi, br.nama_ibu, br.nama_ayah, br.anak_ke, br.tanggal_kelahiran, br.alamat_kelahiran, h.status 
+		result := db.Raw(`select br.id, br.nama_bayi, br.nama_ibu, br.nama_ayah, br.anak_ke, br.tanggal_kelahiran, br.alamat_kelahiran,br.history_id, h.status 
 		from birth_registrations br 
 		left join histories h 
 		on br.history_id = h.id
